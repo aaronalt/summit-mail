@@ -35,11 +35,6 @@ class SummitMail:
         # The email client will try to render the last part first
         message.attach(part1)
         message.attach(part2)
-        '''        
-        # Create secure connection with server
-        context = ssl.create_default_context()
-        return context, message
-        '''
 
     # Adds new emails to the list of already contacted emails
     def update_email_list(self):
@@ -181,9 +176,17 @@ def main():
     test_email = os.getenv(test_cred)
     sender = os.getenv(email_cred)
     pw = os.getenv(pass_cred)
+    # add new class
     email = SummitMail(sender, pw, "test.csv", "rise", "Rise 2019")
+    # build email
     email.build_email()
+    # send test email to address specified in env variables
     email.send_test_once(test_email)
+    # test your csv file
+    # now it will replace 'email_list' - needs to be edited to append to list
+    email.test_csv()
+    # uncomment next line once you are happy with output.txt
+    # email.send_external()
 
 
 if __name__ == '__main__':
