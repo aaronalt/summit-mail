@@ -21,6 +21,8 @@ class SummitMail:
         self.today = date.today()
         self.context = ssl.create_default_context()
         self.message = MIMEMultipart("alternative")
+        self.append_list = []
+        self.client_list = []
 
     # Builds email from HTML/text versions in directory
     # file_source is html/text file names
@@ -45,41 +47,40 @@ class SummitMail:
     def filter_emails(self):
         with open(self.filename) as file:
             company_list = csv.reader(file)
-            client_list = []
             for client in company_list:
                 company = client[0], client[1], client[2], client[3], client[4], client[5], \
                           client[6], client[7], client[8], client[9], client[10]
-                client_list.append(company)
+                self.client_list.append(company)
             # reads given file and checks if each email has already been contacted
-            append_list = []
+
             try:
                 with open('email_list.txt', 'r') as e:
                     emails_list = [i.strip('\n') for i in e.readlines()]
-                for client in client_list:
+                for client in self.client_list:
                     email = client[4]
                     if email in emails_list:
                         print(f"<{email}> already in emails_list")
                     elif email and (email not in emails_list):
                         print(f"added {email}")
-                        append_list.append(email)
+                        self.append_list.append(email)
             except FileNotFoundError:
                 print("email_list not found!")
             e.close()
-        return append_list
+        return self.append_list
 
     # Adds new emails to the list of already contacted emails
-    def update_email_list(self, append_list):
+    def update_email_list(self):
         with open('email_list.txt', 'a+') as a:
-            for i in append_list:
+            for i in self.append_list:
                 print(i, file=a, sep='\n')
         a.close()
         print("'email_list' appended with new emails...")
 
     # send the emails once the file has been cleaned
-    def send_external(self, append_list):
+    def send_external(self):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
             server.login(self.sender_email, self.password)
-            for email in append_list:
+            for email in self.append_list:
                 server.sendmail(
                     self.sender_email, email, self.message.as_string()
                 )
@@ -101,16 +102,16 @@ class SummitMail:
     def test_csv(self):
         with open(self.filename) as file:
             company_list = csv.reader(file)
-            client_list = []
+
             for client in company_list:
                 company = client[0], client[1], client[2], client[3], client[4], client[5], \
                           client[6], client[7], client[8], client[9], client[10]
-                client_list.append(company)
+                self.client_list.append(company)
             # count contacts
             emailed = 0
             empty = 0
             form = 0
-            for client in client_list:
+            for client in self.client_list:
                 if client[4]:
                     emailed += 1
                 elif not (client[4]) and (client[6] == 'Contacted'):
@@ -120,19 +121,18 @@ class SummitMail:
             print(emailed, "...emailed")
             print(empty, '...empty')
             print(form, '...from contact form')
-        return client_list
 
-    def write_output(self, client_list):
+    def write_output(self):
         month = self.today.month
         day = self.today.day
         year = self.today.year
-        today_date = "__" + day + "-" + month + "-" + year
+        todays_date = "__" + day + "-" + month + "-" + year
         # write output to a new file
-        with open(self.output + today_date + ".txt", 'wt') as test_file:
+        with open(self.output + todays_date + ".txt", 'wt') as test_file:
             emailed = []
             empty = []
             contact_form = []
-            for client in client_list:
+            for client in self.client_list:
                 if client[4]:
                     emailed.append(client)
                 elif not (client[4]) and (client[6] == 'Contacted'):
@@ -194,16 +194,16 @@ def main():
     # add new class
     email = SummitMail(sender, pw, "test.csv", "rise", "Summit 2020")
     # build email
-    # email.build_email()
+    email.build_email()
     # send test email to address specified in env variables
     # email.send_test_once(test_email)
-    #
     email.filter_emails()
     # now it will replace 'email_list' - needs to be edited to append to list
     email.update_email_list()
     # email.test_csv()
     # uncomment next line once you are happy with output.txt
     # email.send_external()
+    email.write_output()
 
 
 if __name__ == '__main__':
