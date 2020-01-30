@@ -185,12 +185,9 @@ class SummitMail:
 
 def main():
     # initialize credentials
-    email_cred = 'SENDER_EMAIL'
-    pass_cred = 'SENDER_EMAIL_PASSWORD'
-    test_cred = 'TEST_EMAIL'
-    test_email = os.getenv(test_cred)
-    sender = os.getenv(email_cred)
-    pw = os.getenv(pass_cred)
+    test_email = os.getenv('TEST_EMAIL')
+    sender = os.getenv('SENDER_EMAIL')
+    pw = os.getenv('SENDER_EMAIL_PASSWORD')
     # add new class
     email = SummitMail(sender, pw, "test.csv", "rise", "Summit 2020")
     # build email
