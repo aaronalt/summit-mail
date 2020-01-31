@@ -23,7 +23,7 @@ class EmailTest(unittest.TestCase):
             print("...done.")
             csv.seek(0)
             print(csv.read())
-        self.email = SummitMail(sender, pw, "test.csv", "rise", "Summit 2020")
+        self.email = SummitMail(sender, pw, csv, "rise", "Summit 2020")
 
     def test_build_email(self):
         self.email.build_email()
@@ -38,6 +38,8 @@ class EmailTest(unittest.TestCase):
         self.assertFalse(self.email.client_list)
         self.email.filter_emails()
         self.assertTrue(self.email.client_list)
+        # next line fails test, filter_emails() is reading _io.TextIOWrapper instead of str
+        print("append_list: ", self.email.append_list)
         # there is no 'append_list' at this point
         # should make new file that deletes after testing
 
