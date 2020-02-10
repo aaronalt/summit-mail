@@ -39,11 +39,13 @@ class EmailTest(unittest.TestCase):
 
     def test_filter_emails(self):
         self.assertFalse(self.email.client_list)
+        with open('test.csv', 'a') as csv:
+            line = "\nTest Company 100,category,country,website.com,test@website.com,,,,,,,"
+            csv.write(line)
         self.email.filter_emails()
         self.assertTrue(self.email.client_list)
-        print("append_list: ", self.email.append_list)
-        # there is no 'append_list' at this point
-        # should make new file that deletes after testing
+        self.assertTrue(self.email.append_list == ['test@website.com'])
+
     # def tearDown(self):
         # self.fake_csv.close()
 
