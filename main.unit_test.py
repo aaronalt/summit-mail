@@ -1,7 +1,6 @@
 import unittest
 from main import SummitMail
 import os
-import tempfile
 
 
 class EmailTest(unittest.TestCase):
@@ -38,14 +37,20 @@ class EmailTest(unittest.TestCase):
         self.assertTrue(os.path.exists('rise.html'))
 
     def test_filter_emails(self):
-        self.assertFalse(self.email.client_list)
         with open('test.csv', 'a') as csv:
-            line = "\nTest Company 100,category,country,website.com,test@website.com,,,,,,,"
+            line = "Test Company 100,category,country,website.com,test@website.com,,,,,,,"
             csv.write(line)
         self.email.filter_emails()
         self.assertTrue(self.email.client_list)
-        self.assertTrue(self.email.append_list == ['test@website.com'])
-
+        # delete appended line of file
+        with open('test.csv', 'r') as csv:
+            lines = csv.readlines()[:-1]
+        os.remove('test.csv')
+        self.assertFalse((os.path.exists('test.csv')))
+        with open('test.csv', 'wb') as csv:
+            for line in lines:
+                csv.write(line)
+        self.assertTrue((os.path.exists('test.csv')))
     # def tearDown(self):
         # self.fake_csv.close()
 
