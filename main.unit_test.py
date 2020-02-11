@@ -51,8 +51,20 @@ class EmailTest(unittest.TestCase):
             for line in lines:
                 csv.write(line)
         self.assertTrue((os.path.exists('test.csv')))
-    # def tearDown(self):
-        # self.fake_csv.close()
+
+    def test_update_email_list(self):
+        self.test_filter_emails()
+        self.assertTrue(self.email.append_list)
+        with open('email_list.txt', 'r') as email_list:
+            line = email_list.readlines()
+            liszt = [i.strip() for i in line]
+            self.assertFalse(self.email.append_list in liszt)
+        self.email.update_email_list()
+        with open('email_list.txt', 'r') as email_list:
+            line = email_list.readlines()
+            liszt = [i.strip() for i in line]
+            for i in self.email.append_list:
+                self.assertTrue(i in liszt)
 
 
 if __name__ == '__main__':
