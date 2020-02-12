@@ -44,7 +44,7 @@ class SummitMail:
         message.attach(part2)
 
     # filter the emails that have already been contacted, returns a list of not contacted emails
-    def filter_emails(self, email_list="email_list"):
+    def filter_emails(self, email_list="Outputs/Contact_logs/email_list"):
         with open(self.filename) as file:
             company_list = csv.reader(file)
             for client in company_list:
@@ -68,7 +68,7 @@ class SummitMail:
             e.close()
 
     # Adds new emails to the list of already contacted emails
-    def update_email_list(self, email_list="email_list"):
+    def update_email_list(self, email_list="Outputs/Contact_logs/email_list"):
         with open(email_list + '.txt', 'a+') as a:
             for i in self.append_list:
                 print(i, file=a, sep='\n')
@@ -174,7 +174,7 @@ def main():
     sender = os.getenv('SENDER_EMAIL')
     pw = os.getenv('SENDER_EMAIL_PASSWORD')
     # add new class
-    email = SummitMail(sender, pw, "test.csv", "rise", "Summit 2020")
+    email = SummitMail(sender, pw, "Outputs/Tests/test.csv", "rise", "Summit 2020")
     # build email
     email.build_email()
     # send test email to address specified in env variables

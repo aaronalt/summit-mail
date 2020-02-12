@@ -7,7 +7,7 @@ class EmailTest(unittest.TestCase):
     def setUp(self):
         sender = os.getenv('SENDER_EMAIL')
         pw = os.getenv('SENDER_EMAIL_PASSWORD')
-        self.email = SummitMail(sender, pw, "test.csv", "test", "Summit 2020")
+        self.email = SummitMail(sender, pw, "Outputs/Tests/test.csv", "Outputs/Tests/test", "Summit 2020")
 
     def test_build_email(self):
         self.email.build_email()
@@ -15,44 +15,44 @@ class EmailTest(unittest.TestCase):
         self.assertTrue(self.email.subject)
         self.assertTrue(self.email.subject == "Summit 2020")
         self.assertFalse(self.email.sender_email)
-        self.assertTrue(os.path.exists('test.txt'))
-        self.assertTrue(os.path.exists('test.html'))
 
     def test_filter_emails(self):
-        with open('test.csv', 'a') as csv:
+        with open('Outputs/Tests/test.csv', 'a') as csv:
             line = "Test Company 100,category,country,website.com,test@website.com,,,,,,,"
             csv.write(line)
-        self.email.filter_emails("email_list_test")
+        self.email.filter_emails("Outputs/Tests/email_list_test")
         self.assertTrue(self.email.client_list)
         # delete appended line of file
-        with open('test.csv', 'r') as csv:
+        with open('Outputs/Tests/test.csv', 'r') as csv:
             lines = csv.readlines()[:-1]
-        os.remove('test.csv')
-        self.assertFalse((os.path.exists('test.csv')))
-        with open('test.csv', 'wb') as csv:
+        os.remove('Outputs/Tests/test.csv')
+        self.assertFalse((os.path.exists('Outputs/Tests/test.csv')))
+        with open('Outputs/Tests/test.csv', 'wb') as csv:
             for line in lines:
                 csv.write(line)
-        self.assertTrue((os.path.exists('test.csv')))
+        self.assertTrue((os.path.exists('Outputs/Tests/test.csv')))
 
     def test_update_email_list(self):
         self.test_filter_emails()
         self.assertTrue(self.email.append_list)
-        with open('email_list_test.txt', 'r') as email_list:
+        with open('Outputs/Tests/email_list_test.txt', 'r') as email_list:
             line = email_list.readlines()
             liszt = [i.strip() for i in line]
             self.assertFalse(self.email.append_list in liszt)
-        self.email.update_email_list("email_list_test")
-        with open('email_list_test.txt', 'r') as email_list:
+        self.email.update_email_list("Outputs/Tests/email_list_test")
+        with open('Outputs/Tests/email_list_test.txt', 'r') as email_list:
             line = email_list.readlines()[:-1]
             print(line)
-        os.remove('email_list_test.txt')
-        with open('email_list_test.txt', 'w') as new_email_list:
+        os.remove('Outputs/Tests/email_list_test.txt')
+        with open('Outputs/Tests/email_list_test.txt', 'w') as new_email_list:
             for i in line:
                 new_email_list.write(i)
 
-    def test_write_output(self):
-        self.test_filter_emails()
-
+    def test_sub_directory(self):
+        self.assertTrue(os.path.exists('Outputs/Tests/test.csv'))
+        self.assertTrue(os.path.exists('Outputs/Tests/test.txt'))
+        self.assertTrue(os.path.exists('Outputs/Tests/test.html'))
+        self.assertTrue(os.path.exists('Outputs/Tests/email_list_test.txt'))
 
 
 if __name__ == '__main__':
