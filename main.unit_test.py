@@ -15,8 +15,8 @@ class EmailTest(unittest.TestCase):
         self.assertTrue(self.email.subject)
         self.assertTrue(self.email.subject == "Summit 2020")
         self.assertFalse(self.email.sender_email)
-        self.assertTrue(os.path.exists('rise.txt'))
-        self.assertTrue(os.path.exists('rise.html'))
+        self.assertTrue(os.path.exists('test.txt'))
+        self.assertTrue(os.path.exists('test.html'))
 
     def test_filter_emails(self):
         with open('test.csv', 'a') as csv:
@@ -41,7 +41,7 @@ class EmailTest(unittest.TestCase):
             line = email_list.readlines()
             liszt = [i.strip() for i in line]
             self.assertFalse(self.email.append_list in liszt)
-        self.email.update_email_list()
+        self.email.update_email_list("email_list_test")
         with open('email_list_test.txt', 'r') as email_list:
             line = email_list.readlines()[:-1]
             print(line)
@@ -50,7 +50,9 @@ class EmailTest(unittest.TestCase):
             for i in line:
                 new_email_list.write(i)
 
-    #def test_write_output(self):
+    def test_write_output(self):
+        self.test_filter_emails()
+
 
 
 if __name__ == '__main__':

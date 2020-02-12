@@ -59,6 +59,7 @@ class SummitMail:
                     email = client[4]
                     if email in emails_list:
                         print(f"<{email}> already in emails_list")
+                        self.client_list.remove(client)
                     elif email and (email not in emails_list):
                         print(f"added {email}")
                         self.append_list.append(email)
@@ -67,8 +68,8 @@ class SummitMail:
             e.close()
 
     # Adds new emails to the list of already contacted emails
-    def update_email_list(self):
-        with open('email_list.txt', 'a+') as a:
+    def update_email_list(self, email_list="email_list"):
+        with open(email_list + '.txt', 'a+') as a:
             for i in self.append_list:
                 print(i, file=a, sep='\n')
         a.close()
@@ -124,9 +125,9 @@ class SummitMail:
         month = self.today.month
         day = self.today.day
         year = self.today.year
-        todays_date = "__" + day + "-" + month + "-" + year
+        date_today = "__" + day + "-" + month + "-" + year
         # write output to a new file
-        with open(self.output + todays_date + ".txt", 'wt') as test_file:
+        with open(self.output + date_today + ".txt", 'wt') as test_file:
             emailed = []
             empty = []
             contact_form = []

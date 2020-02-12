@@ -14,6 +14,3 @@ test@testcompany13.com
 test@testcompany14.com
 test@testcompany15.com
 test@testcompany16.com
-test@testcompany17.com
-test@testcompany18.com
-test@testcompany19.com
