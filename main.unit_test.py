@@ -55,21 +55,16 @@ class EmailTest(unittest.TestCase):
     def test_update_email_list(self):
         self.test_filter_emails()
         self.assertTrue(self.email.append_list)
-        with open('email_list.txt', 'r') as email_list:
+        with open('email_list_test.txt', 'r') as email_list:
             line = email_list.readlines()
             liszt = [i.strip() for i in line]
             self.assertFalse(self.email.append_list in liszt)
         self.email.update_email_list()
-        with open('email_list.txt', 'r') as email_list:
-            line = email_list.readlines()
-            liszt = [i.strip() for i in line]
-            '''for i in self.email.append_list:
-                self.assertTrue(i in liszt)'''
-        with open('email_list.txt', 'r') as email_list:
+        with open('email_list_test.txt', 'r') as email_list:
             line = email_list.readlines()[:-1]
             print(line)
-        os.remove('email_list.txt')
-        with open('email_list.txt', 'w') as new_email_list:
+        os.remove('email_list_test.txt')
+        with open('email_list_test.txt', 'w') as new_email_list:
             for i in line:
                 new_email_list.write(i)
 
