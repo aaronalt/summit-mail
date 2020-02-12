@@ -10,3 +10,5 @@ Set environment variables in `.env`
 * *SENDER_EMAIL* -> email you want to send from
 * *SENDER_EMAIL_PASSWORD* -> app password of the email (not user password)
 * *TEST_EMAIL* -> if you want to send your email to an address to check the format, enter it here
+
+`$ pipenv run python main.py`
