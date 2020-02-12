@@ -25,7 +25,7 @@ class EmailTest(unittest.TestCase):
             print("Temp file:")
             print(csv.read())
             '''
-        self.email = SummitMail(sender, pw, "test.csv", "rise", "Summit 2020")
+        self.email = SummitMail(sender, pw, "test.csv", "test", "Summit 2020")
 
     def test_build_email(self):
         self.email.build_email()
@@ -67,7 +67,6 @@ class EmailTest(unittest.TestCase):
         with open('email_list_test.txt', 'w') as new_email_list:
             for i in line:
                 new_email_list.write(i)
-
 
 
 if __name__ == '__main__':
