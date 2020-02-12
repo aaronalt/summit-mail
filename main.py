@@ -44,7 +44,7 @@ class SummitMail:
         message.attach(part2)
 
     # filter the emails that have already been contacted, returns a list of not contacted emails
-    def filter_emails(self):
+    def filter_emails(self, email_list="email_list"):
         with open(self.filename) as file:
             company_list = csv.reader(file)
             for client in company_list:
@@ -53,7 +53,7 @@ class SummitMail:
                 self.client_list.append(company)
             # reads given file and checks if each email has already been contacted
             try:
-                with open('email_list.txt', 'r') as e:
+                with open(email_list + '.txt', 'r') as e:
                     emails_list = [i.strip('\n') for i in e.readlines()]
                 for client in self.client_list:
                     email = client[4]
@@ -166,20 +166,6 @@ class SummitMail:
             test_file.write(f'Total contacted from form: {total_form}\n')
             test_file.write('--------------------')
 
-    '''     
-    # write to new file
-    try:
-        f = open('email_list.txt', 'r')
-        if f:
-            os.remove('email_list.txt')
-    except FileNotFoundError:
-        print("Creating \'email_list.txt\'...")
-    email_list = open('email_list.txt', 'wt')
-    for each in emailed:
-        email_list.write(each[4])
-        email_list.write('\n')
-    '''
-
 
 def main():
     # initialize credentials
@@ -193,7 +179,6 @@ def main():
     # send test email to address specified in env variables
     # email.send_test_once(test_email)
     email.filter_emails()
-    # now it will replace 'email_list' - needs to be edited to append to list
     email.update_email_list()
     # email.test_csv()
     # uncomment next line once you are happy with output.txt
