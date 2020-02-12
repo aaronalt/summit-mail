@@ -63,8 +63,16 @@ class EmailTest(unittest.TestCase):
         with open('email_list.txt', 'r') as email_list:
             line = email_list.readlines()
             liszt = [i.strip() for i in line]
-            for i in self.email.append_list:
-                self.assertTrue(i in liszt)
+            '''for i in self.email.append_list:
+                self.assertTrue(i in liszt)'''
+        with open('email_list.txt', 'r') as email_list:
+            line = email_list.readlines()[:-1]
+            print(line)
+        os.remove('email_list.txt')
+        with open('email_list.txt', 'w') as new_email_list:
+            for i in line:
+                new_email_list.write(i)
+
 
 
 if __name__ == '__main__':

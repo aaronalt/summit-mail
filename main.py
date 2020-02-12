@@ -52,7 +52,6 @@ class SummitMail:
                           client[6], client[7], client[8], client[9], client[10]
                 self.client_list.append(company)
             # reads given file and checks if each email has already been contacted
-
             try:
                 with open('email_list.txt', 'r') as e:
                     emails_list = [i.strip('\n') for i in e.readlines()]
@@ -66,7 +65,6 @@ class SummitMail:
             except FileNotFoundError:
                 print("email_list not found!")
             e.close()
-        return self.append_list
 
     # Adds new emails to the list of already contacted emails
     def update_email_list(self):
