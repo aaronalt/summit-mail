@@ -11,9 +11,8 @@ class SummitMail:
 
     today = date.today()
 
-    def __init__(self, sender_email, password, filename, file_source, subject, output="output"):
+    def __init__(self, sender_email, password, filename, file_source, subject):
         self.filename = filename
-        self.output = output
         self.file_source = file_source
         self.sender_email = sender_email
         self.password = password
@@ -121,13 +120,13 @@ class SummitMail:
             print(empty, '...empty')
             print(form, '...from contact form')
 
-    def write_output(self):
+    def write_output(self, path="Outputs/Contact_logs/", output="output"):
         month = self.today.month
         day = self.today.day
         year = self.today.year
-        date_today = "__" + day + "-" + month + "-" + year
+        date_today = "__" + str(day) + "_" + str(month) + "_" + str(year)
         # write output to a new file
-        with open(self.output + date_today + ".txt", 'wt') as test_file:
+        with open(path + output + date_today + ".txt", 'wt') as test_file:
             emailed = []
             empty = []
             contact_form = []

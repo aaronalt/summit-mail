@@ -1,9 +1,13 @@
 import unittest
 from main import SummitMail
 import os
+from datetime import date
 
 
 class EmailTest(unittest.TestCase):
+
+    today = date.today()
+
     def setUp(self):
         sender = os.getenv('SENDER_EMAIL')
         pw = os.getenv('SENDER_EMAIL_PASSWORD')
@@ -53,6 +57,14 @@ class EmailTest(unittest.TestCase):
         self.assertTrue(os.path.exists('Outputs/Tests/test.txt'))
         self.assertTrue(os.path.exists('Outputs/Tests/test.html'))
         self.assertTrue(os.path.exists('Outputs/Tests/email_list_test.txt'))
+
+    def test_write_output(self):
+        month = self.today.month
+        day = self.today.day
+        year = self.today.year
+        date_today = "__" + str(day) + "_" + str(month) + "_" + str(year)
+        self.email.write_output("Outputs/Tests/", "output_test")
+        self.assertTrue(os.path.exists("Outputs/Tests/output_test" + date_today + ".txt"))
 
 
 if __name__ == '__main__':
