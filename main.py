@@ -79,9 +79,10 @@ class SummitMail:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
             server.login(self.sender_email, self.password)
             for email in self.append_list:
-                server.sendmail(
-                    self.sender_email, email, self.message.as_string()
-                )
+                if (email != 'email') or (email != ''):
+                    server.sendmail(
+                        self.sender_email, email, self.message.as_string()
+                    )
         return "...Done"
 
     # Use to send to a personal account to test your email
@@ -125,8 +126,10 @@ class SummitMail:
         day = self.today.day
         year = self.today.year
         date_today = "__" + str(day) + "_" + str(month) + "_" + str(year)
+        filename_concat = path + output + date_today
+
         # write output to a new file
-        with open(path + output + date_today + ".txt", 'wt') as test_file:
+        with open(filename_concat + ".txt", 'wt') as test_file:
             emailed = []
             empty = []
             contact_form = []
@@ -169,20 +172,23 @@ class SummitMail:
 
 def main():
     # initialize credentials
+    os.environ['TEST_EMAIL'] = 'aaronalt07@gmail.com'
+    os.environ['SENDER_EMAIL'] = 'aaron@mango-byte.com'
+    os.environ['SENDER_EMAIL_PASSWORD'] = 'sjmuclvzdtaqbhxa'
     test_email = os.getenv('TEST_EMAIL')
     sender = os.getenv('SENDER_EMAIL')
     pw = os.getenv('SENDER_EMAIL_PASSWORD')
     # add new class
-    email = SummitMail(sender, pw, "Outputs/Tests/test.csv", "rise", "Summit 2020")
+    email = SummitMail(sender, pw, "Rise App Company List - companies ALPHA.csv", "rise", "Rise 2019")
     # build email
     email.build_email()
-    # send test email to address specified in env variables
+    # ------ send test email to address specified in env variables -------
     # email.send_test_once(test_email)
     email.filter_emails()
     email.update_email_list()
     # email.test_csv()
     # uncomment next line once you are happy with output.txt
-    # email.send_external()
+    email.send_external()
     email.write_output()
 
 
