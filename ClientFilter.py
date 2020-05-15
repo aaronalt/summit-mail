@@ -9,11 +9,11 @@ class ClientFilter:
         self.clients_not_contacted = []
         self.clients_to_contact = []
 
-    def filter(self):
+    def filter_emails(self):
         with open(self.csv_file) as f:
             file = csv.reader(f)
             for field in file:
-                client = Client(field[0], field[1], field[2], field[3], field[4], field[5] /
+                client = Client(field[0], field[1], field[2], field[3], field[4], field[5],
                                 field[6], field[7], field[8], field[9], field[10])
                 self.clients_not_contacted.append(client)
             try:

@@ -20,9 +20,10 @@ class SummitMail:
     html_txt = input("html filename: ")
     email = Email(subject, html_txt)
     message = email.build()
-    clients = ClientFilter("Tests/test.csv", "Tests/email_list_test.txt")
+    clients = ClientFilter("Outputs/Tests/test.csv", "Outputs/Tests/email_list_test.txt")
     to_contact = clients.clients_to_contact
-    print(to_contact)
+    filtered = clients.filter_emails()
+    print(filtered)
 
 
 def main():
