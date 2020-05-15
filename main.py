@@ -1,9 +1,4 @@
-from Output import Output
-from Client import Client
-from ClientFilter import ClientFilter
 from Email import Email
-import os
-import requests
 
 
 class SummitMail:
@@ -16,14 +11,11 @@ class SummitMail:
     api_key = os.getenv('AIRTABLE_API_KEY')
     """
 
-    subject = input("email subject: ")
-    html_txt = input("html filename: ")
-    email = Email(subject, html_txt)
-    message = email.build()
-    clients = ClientFilter("Outputs/Tests/test.csv", "Outputs/Tests/email_list_test.txt")
-    to_contact = clients.clients_to_contact
-    filtered = clients.filter_emails()
-    print(filtered)
+    # subject = input("    email subject: ")
+    # html_txt = input("    html filename: ")
+    # csv_file = input("    csv filename: ") + ".csv"
+    email = Email("Hi", "Outputs/Tests/test")
+    email.send_external("New Contacts-Grid view (1).csv")
 
 
 def main():

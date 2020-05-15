@@ -4,6 +4,7 @@ import smtplib
 import ssl
 import os
 from Output import Output
+from ClientFilter import ClientFilter
 
 
 class Email:
@@ -30,7 +31,6 @@ class Email:
         part2 = MIMEText(html, "html")
         message.attach(part1)
         message.attach(part2)
-        print("Done building email")
         return message
 
     def send_test_once(self, send_to):
@@ -42,18 +42,22 @@ class Email:
             )
         return "Testing done..."
 
-    def send_external(self, clients_to_contact):
+    def send_external(self, csv_file):
         message = self.build()
-        print(clients_to_contact)
+        to_filter = ClientFilter(csv_file)
+        to_contact = to_filter.filter_emails()
+        print("\nClient list to be emailed:\n---------")
+        for i in to_contact:
+            print(i.name)
+        print("-------")
         proceed = input("Proceed? y/n ... ")
         if proceed == 'y':
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
                 server.login(self.sender_email, self.password)
-                for email in clients_to_contact:
+                for email in to_contact:
                     server.sendmail(
                         self.sender_email, email, message.as_string()
                     )
-            output = Output()
-            return
+            print("\n")
         else:
-            return "Aborting the mission..."
+            print("Aborting the mission...")
