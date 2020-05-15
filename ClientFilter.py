@@ -3,7 +3,7 @@ from Client import Client
 
 
 class ClientFilter:
-    def __init__(self, csv_file, emailed_list="Outputs/Contact_logs/emailed_list.txt"):
+    def __init__(self, csv_file, emailed_list="Outputs/Contact_logs/email_list.txt"):
         self.csv_file = csv_file
         self.emailed_list = emailed_list
         self.clients_not_contacted = []
@@ -25,9 +25,9 @@ class ClientFilter:
                                     and ((client.status == "") or (client.status.lower() == "not contacted"))
                     if not_contacted:
                         self.clients_to_contact.append(client)
+                e.close()
             except FileNotFoundError:
                 print("email_list not found")
-            e.close()
         return self.clients_to_contact
 
     def update_email_list(self):
