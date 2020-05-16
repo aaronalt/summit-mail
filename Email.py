@@ -51,13 +51,21 @@ class Email:
             print(i.name)
         print("-------")
         proceed = input("Proceed? y/n ... ")
+        output = Output(to_contact)
         if proceed == 'y':
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
                 server.login(self.sender_email, self.password)
-                for email in to_contact:
-                    server.sendmail(
-                        self.sender_email, email, message.as_string()
-                    )
+
+                for each in to_contact:
+                    try:
+                        server.sendmail(
+                            self.sender_email, each.email, message.as_string()
+                        )
+                    except smtplib.SMTPRecipientsRefused as e:
+                        print(e)
+                        to_contact.pop(each)
+                        pass
+            output.write(to_contact)
             print("\n")
         else:
             print("Aborting the mission...")

@@ -1,3 +1,3 @@
 name,country,website,email,status,contact_date,contact_method,source,result,error_result,interest_level
 company1,U.S.A.,www.testcompany1.com,test@company1.com,,,,,,,,,,,,,
-company2,U.S.A.,www.testcompany2.com,test@company2.com,,,,,,,,,,,,,
+company2,U.S.A.,www.testcompany2.com,test@company2.com,Contacted,,,,,,,,,,,,
