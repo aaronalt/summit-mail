@@ -1,5 +1,7 @@
 from datetime import date
 
+from ClientFilter import ClientFilter
+
 
 class Output:
 

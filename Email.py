@@ -42,20 +42,21 @@ class Email:
             )
         return "Testing done..."
 
-    def send_external(self, csv_file):
+    def send_external(self, csv_file, write_output=True):
         message = self.build()
         to_filter = ClientFilter(csv_file)
         to_contact = to_filter.filter_emails()
+        output = Output(to_contact)
         print("\nClient list to be emailed:\n---------")
         for i in to_contact:
             print(i.name)
         print("-------")
-        proceed = input("Proceed? y/n ... ")
-        output = Output(to_contact)
+        if write_output:
+            output.write()
+        proceed = input("Proceed  with emailing? y/n ... ")
         if proceed == 'y':
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
                 server.login(self.sender_email, self.password)
-
                 for each in to_contact:
                     try:
                         server.sendmail(
@@ -65,7 +66,6 @@ class Email:
                         print(e)
                         to_contact.pop(each)
                         pass
-            output.write(to_contact)
             print("\n")
         else:
             print("Aborting the mission...")
