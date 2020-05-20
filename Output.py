@@ -30,6 +30,6 @@ class Output:
                 client = emailed.pop()
                 total += 1
                 file.write(f'{client.name} ({client.country}) {client.website} | {client.email}\n')
-            file.write('\n--------------------\n')
+            file.write('--------------------\n')
             file.write(f'Total emailed: {total}\n')
             file.write('--------------------')
