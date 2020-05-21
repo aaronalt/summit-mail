@@ -1,14 +1,15 @@
 from Email import Email
 from ClientFilter import ClientFilter
-from AirtableConnect import Airtable, AirtableAuth
-from AirtableNewContacts import AirtableNewContacts
 import requests
+from airtable import Airtable
+import os
 
 
 class SummitMail:
 
-    connect = Airtable()
-    connect.get_not_contacted()
+    airtable = Airtable('appTpBROWIBsmE7FD', "New Contacts", 'keyAlrM1hXFqzhEnm')
+    not_contacted = airtable.get_all(formula="{status}=''", max_records=25)
+    print(not_contacted)
     # email = Email("App Development Support", "Inputs/contact_new_clients")
     # email.send_external("New Contacts-Grid view.csv")
 
