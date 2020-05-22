@@ -1,17 +1,27 @@
 from Email import Email
-from ClientFilter import ClientFilter
 import requests
-from airtable import Airtable
 import os
+from Client import Client
+from airtable import Airtable
 
 
 class SummitMail:
-
-    airtable = Airtable('appTpBROWIBsmE7FD', "New Contacts", 'keyAlrM1hXFqzhEnm')
-    not_contacted = airtable.get_all(formula="{status}=''", max_records=25)
-    print(not_contacted)
-    # email = Email("App Development Support", "Inputs/contact_new_clients")
-    # email.send_external("New Contacts-Grid view.csv")
+    new_contacts = Airtable('appTpBROWIBsmE7FD', "New Contacts", 'keyAlrM1hXFqzhEnm')
+    countries_table = Airtable('appTpBROWIBsmE7FD', "Countries", 'keyAlrM1hXFqzhEnm')
+    all_countries = countries_table.get_all()
+    client_objects = []
+    print(all_countries)
+    for id in new_contacts.get_all(formula="{status}=''", max_records=25):
+        country = ''
+        for i in all_countries:
+            if i['id'] == id['fields']['country'][0]:
+                country = i['fields']['Name']
+                break
+        client_objects.append(Client(id['fields']['name'].strip(), country,
+                                     id['fields']['website'],
+                                     id['fields']['email'].strip()))
+    email = Email("App Development Support", "Inputs/contact_new_clients")
+    email.send_external(client_objects)
 
 
 def main():
