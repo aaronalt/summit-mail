@@ -9,6 +9,7 @@ verify_ssl = true
 requests = "*"
 airtable-python-wrapper = "*"
 python-dotenv = "*"
+pyqt5 = "==5.9.2"
 
 [requires]
 python_version = "3.7"
