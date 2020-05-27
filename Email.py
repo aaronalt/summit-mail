@@ -13,19 +13,19 @@ class Email:
     sender_email = os.getenv('SENDER_EMAIL')
     password = os.getenv('SENDER_EMAIL_PASSWORD')
     test_email = os.getenv('TEST_EMAIL')
+    message = MIMEMultipart("alternative")
 
     def __init__(self, subject, html_txt):
         self.subject = subject
-        self.message = MIMEMultipart("alternative")
-        self.html_txt = html_txt
+        self.html_txt = f'{html_txt}.txt'
 
     def build(self):
         message = self.message
         message["Subject"] = self.subject
         message["From"] = self.sender_email
-        with open(self.html_txt + ".txt", "r") as t:
+        with open(self.html_txt, "r") as t:
             text = t.read()
-        with open(self.html_txt + ".html", "r") as h:
+        with open(self.html_txt, "r") as h:
             html = h.read()
         part1 = MIMEText(text, "plain")
         part2 = MIMEText(html, "html")
@@ -34,11 +34,10 @@ class Email:
         return message
 
     def send_test_once(self, send_to):
-        message = self.build()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
             server.login(self.sender_email, self.password)
             server.sendmail(
-                self.sender_email, send_to, message.as_string()
+                self.sender_email, send_to, self.message.as_string()
             )
         return "Testing done..."
 
