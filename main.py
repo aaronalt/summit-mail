@@ -26,17 +26,21 @@ class SummitMail:
             if i['id'] == id['fields']['country'][0]:
                 country = i['fields']['Name']
                 break
-
-        new_client = Client(id['fields']['name'].strip(), country,
-                            id['fields']['website'],
-                            id['fields']['email'].strip())
-        client_objects.append(new_client)
-
-        record = new_contacts.match('name', new_client.name)
-        fields = {'name': new_client.name, 'country': new_client.country, 'website': new_client.website,
-                  'email': new_client.email, 'status': 'Contacted', 'contact date': date, 'contact method': 'Email',
-                  'source': 'goodfirms.co', 'result': 'No response'}
-        new_contacts.update(record['id'], fields, typecast=True)
+        new_client = Client('', '', '', '')
+        try:
+            new_client = Client(id['fields']['name'].strip(), country,
+                                id['fields']['website'],
+                                id['fields']['email'].strip())
+            client_objects.append(new_client)
+            record = new_contacts.match('name', new_client.name)
+            fields = {'name': new_client.name, 'country': new_client.country, 'website': new_client.website,
+                      'email': new_client.email, 'status': 'Contacted', 'contact date': date, 'contact method': 'Email',
+                      'source': 'goodfirms.co', 'result': 'No response'}
+            new_contacts.update(record['id'], fields, typecast=True)
+        except KeyError as error:
+            print(f"There was a problem processing \'{id['fields']['name']}\'...")
+            print(error)
+            continue
 
     email = Email("App Development Support", "Inputs/contact_new_clients")
     email.send_external(client_objects)
