@@ -6,11 +6,13 @@ import datetime
 from Client import Client
 from airtable import Airtable
 
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QVBoxLayout
+
 from dotenv import load_dotenv
 load_dotenv()
 
 
-class SummitMail:
+"""class SummitMail:
     d = datetime.datetime.now()
     date = f'{d.day}/{d.month}/{d.year}'
 
@@ -43,12 +45,28 @@ class SummitMail:
             continue
 
     email = Email("App Development Support", "Inputs/contact_new_clients")
-    email.send_external(client_objects)
+    email.send_external(client_objects)"""
 
 
-def main():
-    mailer = SummitMail()
+class MainWindow(QMainWindow):
+    def __init__(self, *args, **kwargs):
+        super(MainWindow).__init__(*args, **kwargs)
+        window = QWidget()
+        layout = QVBoxLayout()
+        layout.addWidget(QPushButton("Start from saved cfg"))
+        layout.addWidget(QPushButton("Start new session"))
+        window.setLayout(layout)
+        window.show()
+        app.exec_()
+
+
+# def main():
+    # mailer = SummitMail()
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    app = QApplication([])
+    app.setApplicationName("SummitMailer")
+    app.setStyle("Fusion")
+    MainWindow()
