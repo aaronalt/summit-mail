@@ -10,6 +10,7 @@ requests = "*"
 airtable-python-wrapper = "*"
 python-dotenv = "*"
 pyqt5 = "==5.9.2"
+pyside2 = "*"
 
 [requires]
 python_version = "3.7"
