@@ -8,7 +8,7 @@ from airtable import Airtable
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
     QListView, QGridLayout, QLineEdit
 from PySide2.QtGui import Qt, QFont
-from PySide2.QtCore import Qt, QStringListModel
+from PySide2.QtCore import Qt, QStringListModel, Signal
 import sys
 from dotenv import load_dotenv
 load_dotenv()
@@ -50,15 +50,14 @@ load_dotenv()
     email.send_external(client_objects)"""
 
 
-class MainWindow(QMainWindow):
+class Welcome(QWidget):
+
+    switch = Signal()
+
     def __init__(self):
-        super(MainWindow).__init__(self)
-        ui = self.setup_ui()
-        ui.show()
-        sys.exit(app.exec_())
+        QWidget.__init__(self)
+        self.setWindowTitle("SummitMailer")
 
-
-    def setup_ui(self):
         layout = QVBoxLayout()
         title = QLabel("SummitMail(er)")
         title.setAlignment(Qt.AlignCenter)
@@ -87,8 +86,8 @@ class MainWindow(QMainWindow):
         btn_layout.addWidget(new_session_btn)
         btn_layout.setAlignment(Qt.AlignCenter)
 
-        saved_cfg_btn.clicked.connect(self.btnClicked_from_saved_cfg)
-        new_session_btn.clicked.connect(self.btnClicked_new_session)
+        saved_cfg_btn.clicked.connect(self.switch_window)
+        new_session_btn.clicked.connect(self.switch_window)
 
         layout.addWidget(title)
         layout.addWidget(subtitle)
@@ -97,11 +96,21 @@ class MainWindow(QMainWindow):
         layout.addStretch(1)
 
         window = QWidget()
-        window.setLayout(layout)
-        window.setGeometry(311, 186, 817, 330)
-        return window
+        self.setLayout(layout)
+        self.setGeometry(311, 186, 817, 330)
 
-    def btnClicked_from_saved_cfg(self):
+    def switch_window(self):
+        self.switch.emit()
+
+
+class LoadFromSaved(QWidget):
+
+    switch = Signal()
+
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setWindowTitle("Load from saved cfg")
+
         layout = QVBoxLayout()
         # widget 1: prompt
         font = QFont()
@@ -121,19 +130,24 @@ class MainWindow(QMainWindow):
         go = QPushButton("Go")
         btns.addWidget(back)
         btns.addWidget(go)
-        back.clicked.connect(self.ui.close())
+        # back.clicked.connect()
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(list_view)
         layout.addLayout(btns)
         # setup window
-        window = QWidget()
-        window.setLayout(layout)
-        window.setGeometry(311, 186, 400, 180)
-        window.show()
-        window.exec_()
+        self.setLayout(layout)
+        self.setGeometry(311, 186, 400, 180)
 
-    def btnClicked_new_session(self):
+
+class LoadNewSession(QWidget):
+
+    switch = Signal()
+
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setWindowTitle("Load new cfg")
+
         layout = QVBoxLayout()
         # widget 1: edit lines
         base_id = QLabel("Base ID")
@@ -159,16 +173,36 @@ class MainWindow(QMainWindow):
         layout.addLayout(layout_grid)
         layout.addLayout(layout_btns)
         # setup window
-        window = QWidget()
-        window.setLayout(layout)
-        window.setGeometry(311, 186, 400, 180)
-        window.show()
-        window.exec_()
+        self.setLayout(layout)
+        self.setGeometry(311, 186, 400, 180)
 
+
+class Controller:
+
+    def __init__(self):
+        pass
+
+    def show_welcome(self):
+        self.welcome = Welcome()
+        self.welcome.switch.connect(self.show_loadCfg)
+        self.welcome.show()
+
+    def show_loadCfg(self):
+        self.loadCfg = LoadFromSaved()
+        #self.loadCfg.switch.connect()
+        self.welcome.close()
+        self.loadCfg.show()
+
+    def show_loadNew(self):
+        self.loadNew = LoadNewSession()
+        self.welcome.close()
+        self.loadNew.show()
 
 if __name__ == '__main__':
     # main()
     app = QApplication([])
     app.setApplicationName("SummitMailer")
     app.setStyle("Fusion")
-    m = MainWindow()
+    controller = Controller()
+    controller.show_welcome()
+    sys.exit(app.exec_())
