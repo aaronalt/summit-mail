@@ -5,9 +5,10 @@ import datetime
 from Client import Client
 from airtable import Airtable
 
-from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout
+from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
+    QListView
 from PySide2.QtGui import Qt, QFont
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QStringListModel
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -53,7 +54,6 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow).__init__(*args, **kwargs)
         layout = QVBoxLayout()
-
         title = QLabel("SummitMail(er)")
         title.setAlignment(Qt.AlignCenter)
         title_font = QFont()
@@ -61,21 +61,27 @@ class MainWindow(QMainWindow):
         title_font.setPointSize(72)
         title_font.setLetterSpacing(QFont.AbsoluteSpacing, -2.0)
         title.setFont(title_font)
-
         subtitle = QLabel("send mass email campaigns with Airtable API")
         subtitle.setAlignment(Qt.AlignCenter)
         st = QFont()
         st.setPointSize(12)
         subtitle.setFont(st)
 
-        btn_layout = QHBoxLayout()
-        btn_layout.setContentsMargins(25, 50, 25, 25)
+        st.setPointSize(14)
         saved_cfg_btn = QPushButton("Start from saved cfg")
         new_session_btn = QPushButton("Start new session")
+        saved_cfg_btn.setFont(st)
+        new_session_btn.setFont(st)
+        saved_cfg_btn.setFixedSize(150, 80)
+        new_session_btn.setFixedSize(150, 80)
+
+        btn_layout = QHBoxLayout()
+        btn_layout.setContentsMargins(25, 25, 25, 25)
         btn_layout.addWidget(saved_cfg_btn)
         btn_layout.addWidget(new_session_btn)
         btn_layout.setAlignment(Qt.AlignCenter)
-        # btn_layout.addStretch(1)
+
+        saved_cfg_btn.clicked.connect(self.btnClicked_from_saved_cfg)
 
         layout.addWidget(title)
         layout.addWidget(subtitle)
@@ -85,9 +91,42 @@ class MainWindow(QMainWindow):
 
         window = QWidget()
         window.setLayout(layout)
-        window.setGeometry(311, 186, 817, 529)
+        window.setGeometry(311, 186, 817, 330)
         window.show()
         app.exec_()
+
+    def btnClicked_from_saved_cfg(self):
+        layout = QVBoxLayout()
+        # widget 1: prompt
+        font = QFont()
+        font.setPointSize(14)
+        prompt = QLabel("Choose a configuration to load")
+        prompt.setAlignment(Qt.AlignCenter)
+        prompt.setFont(font)
+        prompt.setContentsMargins(25, 25, 25, 25)
+        # widget 2: list
+        model = QStringListModel(["cfg1", "cfg2", "cfg3", "..."])
+        list_view = QListView()
+        list_view.setFont(font)
+        list_view.setModel(model)
+        # widget 3: next/back buttons
+        btns = QHBoxLayout()
+        back = QPushButton("Back")
+        go = QPushButton("Go")
+        btns.addWidget(back)
+        btns.addWidget(go)
+
+        layout.addWidget(prompt)
+        layout.addWidget(list_view)
+        layout.addLayout(btns)
+
+        window = QWidget()
+        window.setLayout(layout)
+        window.setGeometry(311, 186, 817, 330)
+        window.show()
+        window.exec_()
+
+
 
 
 # def main():
