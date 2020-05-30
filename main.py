@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushB
     QListView, QGridLayout, QLineEdit
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, QStringListModel
-
+import sys
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -51,8 +51,14 @@ load_dotenv()
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, *args, **kwargs):
-        super(MainWindow).__init__(*args, **kwargs)
+    def __init__(self):
+        super(MainWindow).__init__(self)
+        ui = self.setup_ui()
+        ui.show()
+        sys.exit(app.exec_())
+
+
+    def setup_ui(self):
         layout = QVBoxLayout()
         title = QLabel("SummitMail(er)")
         title.setAlignment(Qt.AlignCenter)
@@ -93,8 +99,7 @@ class MainWindow(QMainWindow):
         window = QWidget()
         window.setLayout(layout)
         window.setGeometry(311, 186, 817, 330)
-        window.show()
-        app.exec_()
+        return window
 
     def btnClicked_from_saved_cfg(self):
         layout = QVBoxLayout()
@@ -116,6 +121,7 @@ class MainWindow(QMainWindow):
         go = QPushButton("Go")
         btns.addWidget(back)
         btns.addWidget(go)
+        back.clicked.connect(self.ui.close())
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(list_view)
@@ -160,16 +166,9 @@ class MainWindow(QMainWindow):
         window.exec_()
 
 
-
-
-
-# def main():
-    # mailer = SummitMail()
-
-
 if __name__ == '__main__':
     # main()
     app = QApplication([])
     app.setApplicationName("SummitMailer")
     app.setStyle("Fusion")
-    MainWindow()
+    m = MainWindow()
