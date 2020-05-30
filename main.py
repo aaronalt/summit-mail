@@ -6,7 +6,7 @@ from Client import Client
 from airtable import Airtable
 
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QListView
+    QListView, QGridLayout, QLineEdit
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, QStringListModel
 
@@ -82,6 +82,7 @@ class MainWindow(QMainWindow):
         btn_layout.setAlignment(Qt.AlignCenter)
 
         saved_cfg_btn.clicked.connect(self.btnClicked_from_saved_cfg)
+        new_session_btn.clicked.connect(self.btnClicked_new_session)
 
         layout.addWidget(title)
         layout.addWidget(subtitle)
@@ -115,16 +116,49 @@ class MainWindow(QMainWindow):
         go = QPushButton("Go")
         btns.addWidget(back)
         btns.addWidget(go)
-
+        # add widgets
         layout.addWidget(prompt)
         layout.addWidget(list_view)
         layout.addLayout(btns)
-
+        # setup window
         window = QWidget()
         window.setLayout(layout)
-        window.setGeometry(311, 186, 817, 330)
+        window.setGeometry(311, 186, 400, 180)
         window.show()
         window.exec_()
+
+    def btnClicked_new_session(self):
+        layout = QVBoxLayout()
+        # widget 1: edit lines
+        base_id = QLabel("Base ID")
+        api_key = QLabel("API Key")
+        edit_base_id = QLineEdit()
+        edit_api_key = QLineEdit()
+        # setup grid layout
+        layout_grid = QGridLayout()
+        layout_grid.setSpacing(10)
+        layout_grid.addWidget(base_id, 1, 0)
+        layout_grid.addWidget(edit_base_id, 1, 1)
+        layout_grid.addWidget(api_key, 2, 0)
+        layout_grid.addWidget(edit_api_key, 2, 1)
+        # widget 2: buttons
+        layout_btns = QHBoxLayout()
+        btn_back = QPushButton("Back")
+        btn_save = QPushButton("Save cfg")
+        btn_use_once = QPushButton("Use Once")
+        layout_btns.addWidget(btn_back)
+        layout_btns.addWidget(btn_save)
+        layout_btns.addWidget(btn_use_once)
+        # add all layouts
+        layout.addLayout(layout_grid)
+        layout.addLayout(layout_btns)
+        # setup window
+        window = QWidget()
+        window.setLayout(layout)
+        window.setGeometry(311, 186, 400, 180)
+        window.show()
+        window.exec_()
+
 
 
 
