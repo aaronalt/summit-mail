@@ -100,13 +100,12 @@ class Welcome(QWidget):
         self.setGeometry(311, 186, 817, 330)
 
     def switch_window(self, num):
-        print(num)
         self.switch.emit(num)
 
 
 class LoadFromSaved(QWidget):
 
-    switch = Signal()
+    switch = Signal(int)
 
     def __init__(self):
         QWidget.__init__(self)
@@ -131,7 +130,7 @@ class LoadFromSaved(QWidget):
         go = QPushButton("Go")
         btns.addWidget(back)
         btns.addWidget(go)
-        # back.clicked.connect()
+        back.clicked.connect(lambda: self.switch_window(0))
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(list_view)
@@ -140,10 +139,13 @@ class LoadFromSaved(QWidget):
         self.setLayout(layout)
         self.setGeometry(311, 186, 400, 180)
 
+    def switch_window(self, num):
+        self.switch.emit(num)
+
 
 class LoadNewSession(QWidget):
 
-    switch = Signal()
+    switch = Signal(int)
 
     def __init__(self):
         QWidget.__init__(self)
@@ -170,6 +172,7 @@ class LoadNewSession(QWidget):
         layout_btns.addWidget(btn_back)
         layout_btns.addWidget(btn_save)
         layout_btns.addWidget(btn_use_once)
+        btn_back.clicked.connect(lambda: self.switch_window(0))
         # add all layouts
         layout.addLayout(layout_grid)
         layout.addLayout(layout_btns)
@@ -177,33 +180,47 @@ class LoadNewSession(QWidget):
         self.setLayout(layout)
         self.setGeometry(311, 186, 400, 180)
 
+    def switch_window(self, num):
+        self.switch.emit(num)
+
 
 class Controller:
 
     def __init__(self):
         pass
 
-    def show_welcome(self):
-        self.welcome = Welcome()
-        self.welcome.switch.connect(self.load_page)
-        self.welcome.show()
-
     def load_page(self, num):
+        if num == 0:
+            self.show_welcome()
+            try:
+                if self.loadCfg:
+                    self.loadCfg.close()
+                if self.loadNew:
+                    self.loadNew.close()
+            except AttributeError as e:
+                pass
         if num == 1:
             self.show_loadCfg()
         if num == 2:
             self.show_loadNew()
 
+    def show_welcome(self):
+        self.welcome = Welcome()
+        self.welcome.switch.connect(self.load_page)
+        self.welcome.show()
+
     def show_loadCfg(self):
         self.loadCfg = LoadFromSaved()
-        #self.loadCfg.switch.connect()
+        self.loadCfg.switch.connect(self.load_page)
         self.welcome.close()
         self.loadCfg.show()
 
     def show_loadNew(self):
         self.loadNew = LoadNewSession()
+        self.loadNew.switch.connect(self.load_page)
         self.welcome.close()
         self.loadNew.show()
+
 
 if __name__ == '__main__':
     # main()
