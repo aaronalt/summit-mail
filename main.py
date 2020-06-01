@@ -118,19 +118,17 @@ class LoadFromSaved(QWidget):
         prompt = QLabel("Choose a configuration to load")
         prompt.setAlignment(Qt.AlignCenter)
         prompt.setFont(font)
-        prompt.setContentsMargins(25, 25, 25, 25)
+        prompt.setContentsMargins(5, 5, 5, 5)
         # widget 2: list
-        """model = QStringListModel(["cfg1", "cfg2", "cfg3", "..."])
-        list_view = QListView()
-        list_view.setFont(font)
-        list_view.setModel(model)"""
         self.list_cfgs = QComboBox()
+        self.list_cfgs.setContentsMargins(5, 5, 5, 5)
         self.list_cfgs.setStyleSheet("color: white")
         for cfg in os.listdir('Cfg'):
             self.list_cfgs.addItem(cfg)
         self.list_cfgs.currentIndexChanged.connect(self.cfg_selection())
         # widget 3: next/back buttons
         btn_group = QHBoxLayout()
+        btn_group.setContentsMargins(5, 20, 5, 5)
         back = QPushButton("Back")
         go = QPushButton("Go")
         btn_group.addWidget(back)
@@ -152,7 +150,7 @@ class LoadFromSaved(QWidget):
         print(self.list_cfgs.count())
 
 
-class Load_newSession(QWidget):
+class LoadNewSession(QWidget):
 
     switch = Signal(int)
 
@@ -200,7 +198,6 @@ class Controller:
 
     def loader(self, num):
         if num == 0:
-            self.show_welcome()
             try:
                 if self.load_cfg:
                     self.load_cfg.close()
@@ -221,13 +218,11 @@ class Controller:
     def show_load_cfg(self):
         self.load_cfg = LoadFromSaved()
         self.load_cfg.switch.connect(self.loader)
-        self.welcome.close()
         self.load_cfg.show()
 
     def show_load_new(self):
-        self.load_new = Load_newSession()
+        self.load_new = LoadNewSession()
         self.load_new.switch.connect(self.loader)
-        self.welcome.close()
         self.load_new.show()
 
 
