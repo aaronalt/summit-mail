@@ -153,6 +153,9 @@ class LoadFromSaved(QWidget):
 class LoadNewSession(QWidget):
 
     switch = Signal(int)
+    cfg_name = ''
+    api_key = ''
+    base_id = ''
 
     def __init__(self):
         QWidget.__init__(self)
@@ -160,17 +163,24 @@ class LoadNewSession(QWidget):
 
         layout = QVBoxLayout()
         # widget 1: edit lines
-        base_id = QLabel("Base ID")
-        api_key = QLabel("API Key")
+        base = QLabel("Base ID")
+        apikey = QLabel("API Key")
+        cfg_name = QLabel("Name")
         edit_base_id = QLineEdit()
         edit_api_key = QLineEdit()
+        edit_cfg_name = QLineEdit()
+        edit_base_id.editingFinished.connect(lambda: self.set_base(edit_base_id.text()))
+        edit_api_key.editingFinished.connect(lambda: self.set_key(edit_api_key.text()))
+        edit_cfg_name.editingFinished.connect(lambda: self.set_name(edit_cfg_name.text()))
         # setup grid layout
         layout_grid = QGridLayout()
         layout_grid.setSpacing(10)
-        layout_grid.addWidget(base_id, 1, 0)
-        layout_grid.addWidget(edit_base_id, 1, 1)
-        layout_grid.addWidget(api_key, 2, 0)
-        layout_grid.addWidget(edit_api_key, 2, 1)
+        layout_grid.addWidget(cfg_name, 1, 0)
+        layout_grid.addWidget(edit_cfg_name, 1, 1)
+        layout_grid.addWidget(base, 2, 0)
+        layout_grid.addWidget(edit_base_id, 2, 1)
+        layout_grid.addWidget(apikey, 3, 0)
+        layout_grid.addWidget(edit_api_key, 3, 1)
         # widget 2: buttons
         btn_group = QHBoxLayout()
         btn_back = QPushButton("Back")
@@ -180,6 +190,7 @@ class LoadNewSession(QWidget):
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch_window(0))
+        btn_save.clicked.connect(self.save_cfg)
         # add all layouts
         layout.addLayout(layout_grid)
         layout.addLayout(btn_group)
@@ -189,6 +200,22 @@ class LoadNewSession(QWidget):
 
     def switch_window(self, num):
         self.switch.emit(num)
+
+    def set_base(self, text):
+        self.base_id = text
+
+    def set_key(self, text):
+        self.api_key = text
+
+    def set_name(self, text):
+        self.cfg_name = text
+
+    def save_cfg(self):
+        cfg = configparser.ConfigParser()
+        cfg['ENV'] = {'airtable_api_key': self.api_key,
+                      'airtable_base_id': self.base_id}
+        with open(f'Cfg/{self.cfg_name}.ini', 'w') as configfile:
+            cfg.write(configfile)
 
 
 class Controller:
@@ -201,10 +228,9 @@ class Controller:
             try:
                 if self.load_cfg:
                     self.load_cfg.close()
+            except AttributeError:
                 if self.load_new:
                     self.load_new.close()
-            except AttributeError:
-                pass
         if num == 1:
             self.show_load_cfg()
         if num == 2:
