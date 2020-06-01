@@ -61,41 +61,40 @@ class Welcome(QWidget):
         layout = QVBoxLayout()
         title = QLabel("SummitMail(er)")
         title.setAlignment(Qt.AlignCenter)
-        title_font = QFont()
-        title_font.setBold(True)
-        title_font.setPointSize(72)
-        title_font.setLetterSpacing(QFont.AbsoluteSpacing, -2.0)
-        title.setFont(title_font)
+        font_title = QFont()
+        font_title.setBold(True)
+        font_title.setPointSize(72)
+        font_title.setLetterSpacing(QFont.AbsoluteSpacing, -2.0)
+        title.setFont(font_title)
         subtitle = QLabel("send mass email campaigns with Airtable API")
         subtitle.setAlignment(Qt.AlignCenter)
-        st = QFont()
-        st.setPointSize(12)
-        subtitle.setFont(st)
+        font_subtitle = QFont()
+        font_subtitle.setPointSize(12)
+        subtitle.setFont(font_subtitle)
 
-        st.setPointSize(14)
-        saved_cfg_btn = QPushButton("Start from saved cfg")
-        new_session_btn = QPushButton("Start new session")
-        saved_cfg_btn.setFont(st)
-        new_session_btn.setFont(st)
-        saved_cfg_btn.setFixedSize(150, 80)
-        new_session_btn.setFixedSize(150, 80)
+        font_subtitle.setPointSize(14)
+        btn_saved_cfg = QPushButton("Start from saved cfg")
+        btn_new_session = QPushButton("Start new session")
+        btn_saved_cfg.setFont(font_subtitle)
+        btn_new_session.setFont(font_subtitle)
+        btn_saved_cfg.setFixedSize(150, 80)
+        btn_new_session.setFixedSize(150, 80)
 
-        btn_layout = QHBoxLayout()
-        btn_layout.setContentsMargins(25, 25, 25, 25)
-        btn_layout.addWidget(saved_cfg_btn)
-        btn_layout.addWidget(new_session_btn)
-        btn_layout.setAlignment(Qt.AlignCenter)
+        btn_group = QHBoxLayout()
+        btn_group.setContentsMargins(25, 25, 25, 25)
+        btn_group.addWidget(btn_saved_cfg)
+        btn_group.addWidget(btn_new_session)
+        btn_group.setAlignment(Qt.AlignCenter)
 
-        saved_cfg_btn.clicked.connect(lambda: self.switch_window(1))
-        new_session_btn.clicked.connect(lambda: self.switch_window(2))
+        btn_saved_cfg.clicked.connect(lambda: self.switch_window(1))
+        btn_new_session.clicked.connect(lambda: self.switch_window(2))
 
         layout.addWidget(title)
         layout.addWidget(subtitle)
-        layout.addLayout(btn_layout)
+        layout.addLayout(btn_group)
         layout.setContentsMargins(25, 25, 25, 25)
         layout.addStretch(1)
 
-        window = QWidget()
         self.setLayout(layout)
         self.setGeometry(311, 186, 817, 330)
 
@@ -125,16 +124,16 @@ class LoadFromSaved(QWidget):
         list_view.setFont(font)
         list_view.setModel(model)
         # widget 3: next/back buttons
-        btns = QHBoxLayout()
+        btn_group = QHBoxLayout()
         back = QPushButton("Back")
         go = QPushButton("Go")
-        btns.addWidget(back)
-        btns.addWidget(go)
+        btn_group.addWidget(back)
+        btn_group.addWidget(go)
         back.clicked.connect(lambda: self.switch_window(0))
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(list_view)
-        layout.addLayout(btns)
+        layout.addLayout(btn_group)
         # setup window
         self.setLayout(layout)
         self.setGeometry(311, 186, 400, 180)
@@ -143,7 +142,7 @@ class LoadFromSaved(QWidget):
         self.switch.emit(num)
 
 
-class LoadNewSession(QWidget):
+class Load_newSession(QWidget):
 
     switch = Signal(int)
 
@@ -165,17 +164,17 @@ class LoadNewSession(QWidget):
         layout_grid.addWidget(api_key, 2, 0)
         layout_grid.addWidget(edit_api_key, 2, 1)
         # widget 2: buttons
-        layout_btns = QHBoxLayout()
+        btn_group = QHBoxLayout()
         btn_back = QPushButton("Back")
         btn_save = QPushButton("Save cfg")
         btn_use_once = QPushButton("Use Once")
-        layout_btns.addWidget(btn_back)
-        layout_btns.addWidget(btn_save)
-        layout_btns.addWidget(btn_use_once)
+        btn_group.addWidget(btn_back)
+        btn_group.addWidget(btn_save)
+        btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch_window(0))
         # add all layouts
         layout.addLayout(layout_grid)
-        layout.addLayout(layout_btns)
+        layout.addLayout(btn_group)
         # setup window
         self.setLayout(layout)
         self.setGeometry(311, 186, 400, 180)
@@ -189,41 +188,40 @@ class Controller:
     def __init__(self):
         pass
 
-    def load_page(self, num):
+    def loader(self, num):
         if num == 0:
             self.show_welcome()
             try:
-                if self.loadCfg:
-                    self.loadCfg.close()
-                if self.loadNew:
-                    self.loadNew.close()
-            except AttributeError as e:
+                if self.load_cfg:
+                    self.load_cfg.close()
+                if self.load_new:
+                    self.load_new.close()
+            except AttributeError:
                 pass
         if num == 1:
-            self.show_loadCfg()
+            self.show_load_cfg()
         if num == 2:
-            self.show_loadNew()
+            self.show_load_new()
 
     def show_welcome(self):
         self.welcome = Welcome()
-        self.welcome.switch.connect(self.load_page)
+        self.welcome.switch.connect(self.loader)
         self.welcome.show()
 
-    def show_loadCfg(self):
-        self.loadCfg = LoadFromSaved()
-        self.loadCfg.switch.connect(self.load_page)
+    def show_load_cfg(self):
+        self.load_cfg = LoadFromSaved()
+        self.load_cfg.switch.connect(self.loader)
         self.welcome.close()
-        self.loadCfg.show()
+        self.load_cfg.show()
 
-    def show_loadNew(self):
-        self.loadNew = LoadNewSession()
-        self.loadNew.switch.connect(self.load_page)
+    def show_load_new(self):
+        self.load_new = Load_newSession()
+        self.load_new.switch.connect(self.loader)
         self.welcome.close()
-        self.loadNew.show()
+        self.load_new.show()
 
 
 if __name__ == '__main__':
-    # main()
     app = QApplication([])
     app.setApplicationName("SummitMailer")
     app.setStyle("Fusion")
