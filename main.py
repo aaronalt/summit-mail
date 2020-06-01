@@ -8,7 +8,7 @@ from airtable import Airtable
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
     QListView, QGridLayout, QLineEdit
 from PySide2.QtGui import Qt, QFont
-from PySide2.QtCore import Qt, QStringListModel, Signal, Slot
+from PySide2.QtCore import Qt, QStringListModel, Signal
 import sys
 from dotenv import load_dotenv
 load_dotenv()
@@ -57,7 +57,6 @@ class Welcome(QWidget):
     def __init__(self):
         QWidget.__init__(self)
         self.setWindowTitle("SummitMailer")
-        self.page_num = 0
 
         layout = QVBoxLayout()
         title = QLabel("SummitMail(er)")
@@ -87,8 +86,8 @@ class Welcome(QWidget):
         btn_layout.addWidget(new_session_btn)
         btn_layout.setAlignment(Qt.AlignCenter)
 
-        saved_cfg_btn.clicked.connect(self.switch_window_saved())
-        new_session_btn.clicked.connect(self.switch_window_new())
+        saved_cfg_btn.clicked.connect(lambda: self.switch_window(1))
+        new_session_btn.clicked.connect(lambda: self.switch_window(2))
 
         layout.addWidget(title)
         layout.addWidget(subtitle)
@@ -100,13 +99,9 @@ class Welcome(QWidget):
         self.setLayout(layout)
         self.setGeometry(311, 186, 817, 330)
 
-    def switch_window_saved(self):
-        self.page_num = 1
-        self.switch.emit(self.page_num)
-
-    def switch_window_new(self):
-        self.page_num = 2
-        self.switch.emit(self.page_num)
+    def switch_window(self, num):
+        print(num)
+        self.switch.emit(num)
 
 
 class LoadFromSaved(QWidget):
@@ -190,12 +185,14 @@ class Controller:
 
     def show_welcome(self):
         self.welcome = Welcome()
-        self.welcome.switch.connect(self.cfg)
+        self.welcome.switch.connect(self.load_page)
         self.welcome.show()
 
-    @Slot()
-    def cfg(self, num):
-        print(num)
+    def load_page(self, num):
+        if num == 1:
+            self.show_loadCfg()
+        if num == 2:
+            self.show_loadNew()
 
     def show_loadCfg(self):
         self.loadCfg = LoadFromSaved()
