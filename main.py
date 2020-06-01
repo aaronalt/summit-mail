@@ -6,10 +6,11 @@ from Client import Client
 from airtable import Airtable
 
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QListView, QGridLayout, QLineEdit
+    QListView, QGridLayout, QLineEdit, QComboBox
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, QStringListModel, Signal
 import sys
+import configparser
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -119,10 +120,15 @@ class LoadFromSaved(QWidget):
         prompt.setFont(font)
         prompt.setContentsMargins(25, 25, 25, 25)
         # widget 2: list
-        model = QStringListModel(["cfg1", "cfg2", "cfg3", "..."])
+        """model = QStringListModel(["cfg1", "cfg2", "cfg3", "..."])
         list_view = QListView()
         list_view.setFont(font)
-        list_view.setModel(model)
+        list_view.setModel(model)"""
+        self.list_cfgs = QComboBox()
+        self.list_cfgs.setStyleSheet("color: white")
+        for cfg in os.listdir('Cfg'):
+            self.list_cfgs.addItem(cfg)
+        self.list_cfgs.currentIndexChanged.connect(self.cfg_selection())
         # widget 3: next/back buttons
         btn_group = QHBoxLayout()
         back = QPushButton("Back")
@@ -132,7 +138,7 @@ class LoadFromSaved(QWidget):
         back.clicked.connect(lambda: self.switch_window(0))
         # add widgets
         layout.addWidget(prompt)
-        layout.addWidget(list_view)
+        layout.addWidget(self.list_cfgs)
         layout.addLayout(btn_group)
         # setup window
         self.setLayout(layout)
@@ -140,6 +146,10 @@ class LoadFromSaved(QWidget):
 
     def switch_window(self, num):
         self.switch.emit(num)
+
+    def cfg_selection(self):
+        # this function will initiate airtable class with selected cfg
+        print(self.list_cfgs.count())
 
 
 class Load_newSession(QWidget):
