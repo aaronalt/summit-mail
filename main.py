@@ -178,40 +178,6 @@ class LoadNewSession(QWidget):
             cfg.write(configfile)
 
 
-class LoadMainWindow(QWidget):
-
-    def __init__(self, base_id, api_key, base_name):
-        QWidget.__init__(self)
-        self.base_id = base_id
-        self.api_key = api_key
-        self.base_name = base_name
-        self.setWindowTitle("SummitMailer")
-
-        layout = QVBoxLayout()
-        # widget group 1: collect, run, progress bar, base name
-        btn_group_collect_run_progress = QHBoxLayout()
-        btn_collect = QPushButton("Collect")
-        btn_run = QPushButton("Run")
-        progress = QProgressBar()
-        progress.setOrientation(Qt.Horizontal)
-        label_base = QLabel(self.base_name)
-        btn_group_collect_run_progress.addWidget(btn_collect)
-        btn_group_collect_run_progress.addWidget(btn_run)
-        btn_group_collect_run_progress.addWidget(progress)
-        btn_group_collect_run_progress.addWidget(label_base)
-        # widget group 2: table
-        table_model = TableModel()
-        table_view = QTableView()
-        table_view.setModel(table_model)
-
-        # add layouts
-        layout.addLayout(btn_group_collect_run_progress)
-
-        # setup window
-        self.setLayout(layout)
-        self.setGeometry(120, 76, 1200, 748)
-
-
 class Controller:
 
     def __init__(self):
