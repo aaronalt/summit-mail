@@ -2,7 +2,7 @@ import os
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
     QListView, QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView
 from PySide2.QtGui import Qt, QFont
-from PySide2.QtCore import Qt, QStringListModel, Signal
+from PySide2.QtCore import Qt, QStringListModel, Signal, QAbstractTableModel
 import sys
 import configparser
 
@@ -85,7 +85,7 @@ class LoadFromSaved(QWidget):
         self.list_cfgs.setStyleSheet("color: white")
         for cfg in os.listdir('Cfg'):
             self.list_cfgs.addItem(cfg)
-        self.list_cfgs.currentIndexChanged.connect(self.cfg_selection())
+        self.list_cfgs.activated[str].connect(self.cfg_selection)
         # widget 3: next/back buttons
         btn_group = QHBoxLayout()
         btn_group.setContentsMargins(5, 20, 5, 5)
@@ -94,6 +94,7 @@ class LoadFromSaved(QWidget):
         btn_group.addWidget(back)
         btn_group.addWidget(go)
         back.clicked.connect(lambda: self.switch_window(0))
+        go.clicked.connect(lambda: self.switch_window(3))
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(self.list_cfgs)
@@ -105,9 +106,16 @@ class LoadFromSaved(QWidget):
     def switch_window(self, num):
         self.switch.emit(num)
 
-    def cfg_selection(self):
+    def cfg_selection(self, item):
         # this function will initiate airtable class with selected cfg
-        print(self.list_cfgs.count())
+        print(item)
+        cfg = configparser.ConfigParser()
+        cfg.read(os.path.join('Cfg/', item))
+        try:
+            assert(cfg['ENV']['airtable_base_id'])
+        except AssertionError as e:
+            # put dialog box here for error
+            print("No ENV variable called \'airtable_base_id\'")
 
 
 class LoadNewSession(QWidget):
@@ -180,6 +188,8 @@ class LoadNewSession(QWidget):
 
 class LoadMainWindow(QWidget):
 
+    switch = Signal(int)
+
     def __init__(self, base_id, api_key, base_name):
         QWidget.__init__(self)
         self.base_id = base_id
@@ -200,16 +210,46 @@ class LoadMainWindow(QWidget):
         btn_group_collect_run_progress.addWidget(progress)
         btn_group_collect_run_progress.addWidget(label_base)
         # widget group 2: table
+        """
+        access airtable here:
+        data = data_from_airtable()
+        # data = [
+        #         ["Company1", "country", "website", "etc."],
+        #         ["Company2", "country", "website", "etc."]
+        #     ]
+        table_model = TableModel(data)
+        """
         table_model = TableModel()
         table_view = QTableView()
         table_view.setModel(table_model)
-
         # add layouts
         layout.addLayout(btn_group_collect_run_progress)
 
         # setup window
         self.setLayout(layout)
         self.setGeometry(120, 76, 1200, 748)
+
+
+class TableModel(QAbstractTableModel):
+    def __init__(self, data):
+        super(TableModel, self).__init__()
+        self._data = data
+
+    def data(self, index, role):
+        if role == Qt.DisplayRole:
+            # See below for the nested-list data structure.
+            # .row() indexes into the outer list,
+            # .column() indexes into the sub-list
+            return self._data[index.row()][index.column()]
+
+    def rowCount(self, index):
+        # The length of the outer list.
+        return len(self._data)
+
+    def columnCount(self, index):
+        # The following takes the first sub-list, and returns
+        # the length (only works if all rows are an equal length)
+        return len(self._data[0])
 
 
 class Controller:
@@ -222,13 +262,29 @@ class Controller:
             try:
                 if self.load_cfg:
                     self.load_cfg.close()
+                if self.load_new:
+                    self.load_new.close()
             except AttributeError:
                 if self.load_new:
                     self.load_new.close()
+                if self.load_cfg:
+                    self.load_cfg.close()
         if num == 1:
             self.show_load_cfg()
         if num == 2:
             self.show_load_new()
+        if num == 3:
+            self.show_load_main()
+            try:
+                if self.load_cfg:
+                    self.load_cfg.close()
+                if self.load_new:
+                    self.load_new.close()
+            except AttributeError:
+                if self.load_new:
+                    self.load_new.close()
+                if self.load_cfg:
+                    self.load_cfg.close()
 
     def show_welcome(self):
         self.welcome = Welcome()
@@ -244,6 +300,12 @@ class Controller:
         self.load_new = LoadNewSession()
         self.load_new.switch.connect(self.loader)
         self.load_new.show()
+
+    def show_load_main(self):
+
+        self.load_main = LoadMainWindow()
+        self.load_main.switch.connect(self.loader)
+        self.load_main.show()
 
 
 if __name__ == '__main__':
