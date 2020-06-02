@@ -68,6 +68,7 @@ class LoadFromSaved(QWidget):
     switch = Signal(int)
     api_key = ''
     base_id = ''
+    cfg_name = ''
 
     def __init__(self):
         QWidget.__init__(self)
@@ -97,7 +98,7 @@ class LoadFromSaved(QWidget):
         btn_group.addWidget(go)
         back.clicked.connect(lambda: self.switch_window(0))
         go.clicked.connect(lambda: self.switch_window(3))
-        go.clicked.connect(self.cfg_selection)
+        go.clicked.connect(self.connect_to_airtable)
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(self.list_cfgs)
@@ -110,7 +111,7 @@ class LoadFromSaved(QWidget):
         self.switch.emit(num)
 
     def cfg_selection(self, item):
-        """ this function will initiate airtable class with selected cfg """
+        """ this function will create an .ini file with env variables stored from user input"""
         print(item)
         cfg = configparser.ConfigParser()
         cfg.read(os.path.join('Cfg/', item))
@@ -123,9 +124,11 @@ class LoadFromSaved(QWidget):
         # to-do: set .env variable
         self.api_key = cfg['ENV']['airtable_api_key']
         self.base_id = cfg['ENV']['airtable_base_id']
+        self.cfg_name = cfg['ENV']['cfg_name']
 
     def connect_to_airtable(self):
-
+        """ this function will initiate airtable class with selected cfg """
+        print("this will send stuff")
 
 
 
@@ -192,7 +195,8 @@ class LoadNewSession(QWidget):
 
     def save_cfg(self):
         cfg = configparser.ConfigParser()
-        cfg['ENV'] = {'airtable_api_key': self.api_key,
+        cfg['ENV'] = {'cfg_name': self.cfg_name,
+                      'airtable_api_key': self.api_key,
                       'airtable_base_id': self.base_id}
         with open(f'Cfg/{self.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
@@ -286,7 +290,7 @@ class Controller:
         if num == 2:
             self.show_load_new()
         if num == 3:
-            self.show_load_main()
+            self.show_load_main(self.load_cfg.api_key, self.load_cfg.base_id, self.load_cfg.base_id)
             try:
                 if self.load_cfg:
                     self.load_cfg.close()
@@ -313,9 +317,8 @@ class Controller:
         self.load_new.switch.connect(self.loader)
         self.load_new.show()
 
-    def show_load_main(self):
-
-        self.load_main = LoadMainWindow()
+    def show_load_main(self, api_key, base_id, base_name='SummitMail BaseX'):
+        self.load_main = LoadMainWindow(api_key, base_id, base_name)
         self.load_main.switch.connect(self.loader)
         self.load_main.show()
 
