@@ -1,8 +1,8 @@
 import os
-from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QListView, QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView
+from PySide2.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
+    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView
 from PySide2.QtGui import Qt, QFont
-from PySide2.QtCore import Qt, QStringListModel, Signal, QAbstractTableModel
+from PySide2.QtCore import Qt, Signal, QAbstractTableModel
 import sys
 import configparser
 
