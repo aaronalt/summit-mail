@@ -1,54 +1,14 @@
-from Email import Email
-import requests
 import os
-import datetime
-from Client import Client
-from airtable import Airtable
-
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QListView, QGridLayout, QLineEdit, QComboBox
+    QListView, QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, QStringListModel, Signal
 import sys
 import configparser
+
+from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 from dotenv import load_dotenv
 load_dotenv()
-
-
-"""class SummitMail:
-    d = datetime.datetime.now()
-    date = f'{d.day}/{d.month}/{d.year}'
-
-    new_contacts = Airtable('appTpBROWIBsmE7FD', "New Contacts", api_key=os.getenv("AIRTABLE_API_KEY"))
-    countries_table = Airtable('appTpBROWIBsmE7FD', "Countries", api_key=os.getenv("AIRTABLE_API_KEY"))
-    all_countries = countries_table.get_all()
-    client_objects = []
-
-    for id in new_contacts.get_all(formula="{status}=''", max_records=25):
-        # update country field with string from record id
-        country = ''
-        for i in all_countries:
-            if i['id'] == id['fields']['country'][0]:
-                country = i['fields']['Name']
-                break
-        new_client = Client('', '', '', '')
-        try:
-            new_client = Client(id['fields']['name'].strip(), country,
-                                id['fields']['website'],
-                                id['fields']['email'].strip())
-            client_objects.append(new_client)
-            record = new_contacts.match('name', new_client.name)
-            fields = {'name': new_client.name, 'country': new_client.country, 'website': new_client.website,
-                      'email': new_client.email, 'status': 'Contacted', 'contact date': date, 'contact method': 'Email',
-                      'source': 'goodfirms.co', 'result': 'No response'}
-            new_contacts.update(record['id'], fields, typecast=True)
-        except KeyError as error:
-            print(f"There was a problem processing \'{id['fields']['name']}\'...")
-            print(error)
-            continue
-
-    email = Email("App Development Support", "Inputs/contact_new_clients")
-    email.send_external(client_objects)"""
 
 
 class Welcome(QWidget):
@@ -216,6 +176,40 @@ class LoadNewSession(QWidget):
                       'airtable_base_id': self.base_id}
         with open(f'Cfg/{self.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
+
+
+class LoadMainWindow(QWidget):
+
+    def __init__(self, base_id, api_key, base_name):
+        QWidget.__init__(self)
+        self.base_id = base_id
+        self.api_key = api_key
+        self.base_name = base_name
+        self.setWindowTitle("SummitMailer")
+
+        layout = QVBoxLayout()
+        # widget group 1: collect, run, progress bar, base name
+        btn_group_collect_run_progress = QHBoxLayout()
+        btn_collect = QPushButton("Collect")
+        btn_run = QPushButton("Run")
+        progress = QProgressBar()
+        progress.setOrientation(Qt.Horizontal)
+        label_base = QLabel(self.base_name)
+        btn_group_collect_run_progress.addWidget(btn_collect)
+        btn_group_collect_run_progress.addWidget(btn_run)
+        btn_group_collect_run_progress.addWidget(progress)
+        btn_group_collect_run_progress.addWidget(label_base)
+        # widget group 2: table
+        table_model = TableModel()
+        table_view = QTableView()
+        table_view.setModel(table_model)
+
+        # add layouts
+        layout.addLayout(btn_group_collect_run_progress)
+
+        # setup window
+        self.setLayout(layout)
+        self.setGeometry(120, 76, 1200, 748)
 
 
 class Controller:
