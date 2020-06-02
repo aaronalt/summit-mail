@@ -66,6 +66,8 @@ class Welcome(QWidget):
 class LoadFromSaved(QWidget):
 
     switch = Signal(int)
+    api_key = ''
+    base_id = ''
 
     def __init__(self):
         QWidget.__init__(self)
@@ -95,6 +97,7 @@ class LoadFromSaved(QWidget):
         btn_group.addWidget(go)
         back.clicked.connect(lambda: self.switch_window(0))
         go.clicked.connect(lambda: self.switch_window(3))
+        go.clicked.connect(self.cfg_selection)
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(self.list_cfgs)
@@ -107,15 +110,24 @@ class LoadFromSaved(QWidget):
         self.switch.emit(num)
 
     def cfg_selection(self, item):
-        # this function will initiate airtable class with selected cfg
+        """ this function will initiate airtable class with selected cfg """
         print(item)
         cfg = configparser.ConfigParser()
         cfg.read(os.path.join('Cfg/', item))
         try:
             assert(cfg['ENV']['airtable_base_id'])
+            assert(cfg['ENV']['airtable_api_key'])
         except AssertionError as e:
             # put dialog box here for error
-            print("No ENV variable called \'airtable_base_id\'")
+            print("\nAssertionError: No ENV variable\ne")
+        # to-do: set .env variable
+        self.api_key = cfg['ENV']['airtable_api_key']
+        self.base_id = cfg['ENV']['airtable_base_id']
+
+    def connect_to_airtable(self):
+
+
+
 
 
 class LoadNewSession(QWidget):
