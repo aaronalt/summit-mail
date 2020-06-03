@@ -208,6 +208,10 @@ class LoadNewSession(QWidget):
 class LoadMainWindow(QWidget):
 
     switch = Signal(int)
+    data = [
+        ["Company1", "country", "website", "etc."],
+        ["Company2", "country", "website", "etc."]
+    ]
 
     def __init__(self, base_id, api_key, base_name):
         QWidget.__init__(self)
@@ -238,12 +242,9 @@ class LoadMainWindow(QWidget):
         #     ]
         table_model = TableModel(data)
         """
-        data = [
-                 ["Company1", "country", "website", "etc."],
-                 ["Company2", "country", "website", "etc."]
-             ]
+
         table = QHBoxLayout()
-        table_model = TableModel(data)
+        table_model = TableModel(self.data)
         table_view = QTableView()
         table_view.setModel(table_model)
         table.addWidget(table_view)
@@ -263,13 +264,16 @@ class LoadMainWindow(QWidget):
         layout.addLayout(btn_group_collect_run_progress)
         layout.addLayout(table)
         layout.addLayout(btn_group_edit_test)
-
         # setup window
         self.setLayout(layout)
         self.setGeometry(120, 76, 1200, 748)
 
+    def connect_airtable(self):
+        """ connect to AirTable """
+
 
 class TableModel(QAbstractTableModel):
+
     def __init__(self, data):
         super(TableModel, self).__init__()
         self._data = data
