@@ -10,10 +10,9 @@ class SummitMail:
     d = datetime.datetime.now()
     date = f'{d.day}/{d.month}/{d.year}'
 
-    def __init__(self, base_id, api_key, cfg_name):
+    def __init__(self, base_id, api_key):
         self.base_id = base_id
         self.api_key = api_key
-        self.cfg_name = cfg_name
         self.table_name = "New Contacts"
         self._contacts = Airtable(self.base_id, self.table_name, self.api_key)
         self.client_objects = []
@@ -33,6 +32,7 @@ class SummitMail:
                           'email': new_client.email, 'status': 'Contacted', 'contact date': self.date,
                           'contact method': 'Email',
                           'source': 'goodfirms.co', 'result': 'No response'}
+                # todo: move update to own function
                 if update:
                     self._contacts.update(record['id'], fields, typecast=True)
                 else:
@@ -42,5 +42,6 @@ class SummitMail:
                 print(error)
                 continue
 
+    # todo: add Email object functions
     # email = Email("App Development Support", "Inputs/contact_new_clients")
     # email.send_external(client_objects)

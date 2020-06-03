@@ -7,8 +7,7 @@ import sys
 import configparser
 
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
-from dotenv import load_dotenv
-load_dotenv()
+from SummitMail import SummitMail
 
 
 class Welcome(QWidget):
@@ -69,6 +68,8 @@ class LoadFromSaved(QWidget):
     api_key = ''
     base_id = ''
     cfg_name = ''
+    # todo: add table name field from user input
+    # table_name = ''
 
     def __init__(self):
         QWidget.__init__(self)
@@ -124,16 +125,16 @@ class LoadFromSaved(QWidget):
             print(f"\nAssertionError: No ENV variable {ae}\n")
         except KeyError as ke:
             print(f"\nKeyError: No ENV variable {ke}\n")
-        # to-do: set .env variable
+        # todo: set .env variable for SummitMail class
         self.api_key = cfg['ENV']['airtable_api_key']
         self.base_id = cfg['ENV']['airtable_base_id']
         self.cfg_name = cfg['ENV']['cfg_name']
 
     def connect_to_airtable(self):
-        """ this function will initiate airtable class with selected cfg """
+        """ this function will send credentials to MainWindow class in order to init Airtable """
+        # todo: input for 'table name' and ensuing functionality
         print("loading main app...")
-
-
+        return LoadMainWindow(self.base_id, self.api_key, self.cfg_name)
 
 
 class LoadNewSession(QWidget):
@@ -242,7 +243,6 @@ class LoadMainWindow(QWidget):
         #     ]
         table_model = TableModel(data)
         """
-
         table = QHBoxLayout()
         table_model = TableModel(self.data)
         table_view = QTableView()
@@ -269,7 +269,10 @@ class LoadMainWindow(QWidget):
         self.setGeometry(120, 76, 1200, 748)
 
     def connect_airtable(self):
-        """ connect to AirTable """
+        """ connect to AirTable; return data before sending """
+        # todo: add error logic
+        connection = SummitMail(self.base_id, self.api_key)
+        return connection.daily_25()
 
 
 class TableModel(QAbstractTableModel):
@@ -302,6 +305,7 @@ class Controller:
 
     def loader(self, num):
         if num == 0:
+            # todo: fix page closing logic when navigating back to welcome screen
             try:
                 if self.load_cfg:
                     self.load_cfg.close()
