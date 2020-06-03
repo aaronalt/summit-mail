@@ -131,7 +131,7 @@ class LoadFromSaved(QWidget):
 
     def connect_to_airtable(self):
         """ this function will initiate airtable class with selected cfg """
-        print("this will send stuff")
+        print("loading main app...")
 
 
 
@@ -238,11 +238,31 @@ class LoadMainWindow(QWidget):
         #     ]
         table_model = TableModel(data)
         """
-        table_model = TableModel()
+        data = [
+                 ["Company1", "country", "website", "etc."],
+                 ["Company2", "country", "website", "etc."]
+             ]
+        table = QHBoxLayout()
+        table_model = TableModel(data)
         table_view = QTableView()
         table_view.setModel(table_model)
+        table.addWidget(table_view)
+        # widget group 3: test/edit html
+        btn_group_edit_test = QHBoxLayout()
+        btn_generate_output = QPushButton("generate output")
+        btn_send_test = QPushButton("send test")
+        label_view_edit = QLabel("view/edit:")
+        btn_edit_html = QPushButton("html")
+        btn_edit_txt = QPushButton("txt")
+        btn_group_edit_test.addWidget(btn_generate_output)
+        btn_group_edit_test.addWidget(btn_send_test)
+        btn_group_edit_test.addWidget(label_view_edit)
+        btn_group_edit_test.addWidget(btn_edit_html)
+        btn_group_edit_test.addWidget(btn_edit_txt)
         # add layouts
         layout.addLayout(btn_group_collect_run_progress)
+        layout.addLayout(table)
+        layout.addLayout(btn_group_edit_test)
 
         # setup window
         self.setLayout(layout)
