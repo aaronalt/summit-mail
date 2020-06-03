@@ -118,9 +118,12 @@ class LoadFromSaved(QWidget):
         try:
             assert(cfg['ENV']['airtable_base_id'])
             assert(cfg['ENV']['airtable_api_key'])
-        except AssertionError as e:
+            assert (cfg['ENV']['cfg_name'])
+        except AssertionError as ae:
             # put dialog box here for error
-            print("\nAssertionError: No ENV variable\ne")
+            print(f"\nAssertionError: No ENV variable {ae}\n")
+        except KeyError as ke:
+            print(f"\nKeyError: No ENV variable {ke}\n")
         # to-do: set .env variable
         self.api_key = cfg['ENV']['airtable_api_key']
         self.base_id = cfg['ENV']['airtable_base_id']
