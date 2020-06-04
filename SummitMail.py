@@ -10,10 +10,10 @@ class SummitMail:
     d = datetime.datetime.now()
     date = f'{d.day}/{d.month}/{d.year}'
 
-    def __init__(self, base_id, api_key):
+    def __init__(self, base_id, api_key, table_name="New Contacts"):
         self.base_id = base_id
         self.api_key = api_key
-        self.table_name = "New Contacts"
+        self.table_name = table_name
         self._contacts = Airtable(self.base_id, self.table_name, self.api_key)
         self.client_objects = []
 
@@ -41,6 +41,7 @@ class SummitMail:
                 print(f"There was a problem processing \'{id['fields']['name']}\'...")
                 print(error)
                 continue
+        return self.client_objects
 
     # todo: add Email object functions
     # email = Email("App Development Support", "Inputs/contact_new_clients")
