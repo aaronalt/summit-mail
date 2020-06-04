@@ -2,9 +2,12 @@
 A program to automate the mass sending of emails after fairs/conferences/events. 
 ## how to run
 install python3.7 & pipenv
-* `$ cd myproject`
-* `$ pipenv install`
-* `$ cp .env.example .env` 
+
+```
+$ cd myproject
+$ pipenv install  
+$ cp .env.example .env
+```
 
 Set environment variables in `.env` 
 * *SENDER_EMAIL* -> email you want to send from
