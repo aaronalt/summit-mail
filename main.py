@@ -209,10 +209,7 @@ class LoadNewSession(QWidget):
 class LoadMainWindow(QWidget):
 
     switch = Signal(int)
-    data = [
-        ["Company1", "country", "website", "etc."],
-        ["Company2", "country", "website", "etc."]
-    ]
+    data = []
 
     def __init__(self, base_id, api_key, base_name):
         QWidget.__init__(self)
@@ -236,10 +233,8 @@ class LoadMainWindow(QWidget):
         # widget group 2: table
         """
         access airtable here:
-        data = data_from_airtable()
         # data = [
         #         ["Company1", "country", "website", "etc."],
-        #         ["Company2", "country", "website", "etc."]
         #     ]
         table_model = TableModel(data)
         """
@@ -271,8 +266,13 @@ class LoadMainWindow(QWidget):
     def connect_airtable(self):
         """ connect to AirTable; return data before sending """
         # todo: add error logic
-        connection = SummitMail(self.base_id, self.api_key)
-        return connection.daily_25()
+        airtable = SummitMail(self.base_id, self.api_key)
+        client_objects = airtable.daily_25()
+        for c in client_objects:
+            client = [c.name, c.country, c.website, c.email]
+            self.data.append(client)
+        return self.data
+
 
 
 class TableModel(QAbstractTableModel):
