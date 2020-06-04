@@ -274,7 +274,6 @@ class LoadMainWindow(QWidget):
         return self.data
 
 
-
 class TableModel(QAbstractTableModel):
 
     def __init__(self, data):
