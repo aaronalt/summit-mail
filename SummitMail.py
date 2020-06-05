@@ -18,9 +18,8 @@ class SummitMail:
         self.client_objects = []
 
     def daily_25(self, update=False):
-        for i in self._contacts.get_all(formula="{status}=''", max_records=26):
-            # update country field with string from record id
-            new_client = Client('', '', '', '')
+        contacts = self._contacts.get_all(formula="{status}=''", max_records=26)
+        for i in contacts:
             try:
                 new_client = Client(i['fields']['name'].strip(),
                                     i['fields']['country'],
@@ -38,9 +37,9 @@ class SummitMail:
                 else:
                     continue
             except KeyError as error:
-                print(f"There was a problem processing \'{id['fields']['name']}\'...")
                 print(error)
                 continue
+        print("done collecting data")
         return self.client_objects
 
     # todo: add Email object functions
