@@ -1,6 +1,6 @@
 import os
 from PySide2.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea
+    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea, QDialog
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, Signal, QAbstractTableModel
 import sys
@@ -99,7 +99,7 @@ class LoadFromSaved(QWidget):
         btn_group.addWidget(go)
         back.clicked.connect(lambda: self.switch_window(0))
         go.clicked.connect(lambda: self.switch_window(3))
-        go.clicked.connect(self.connect_to_airtable)
+        go.clicked.connect(self.set_airtable_creds)
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(self.list_cfgs)
@@ -125,12 +125,11 @@ class LoadFromSaved(QWidget):
             print(f"\nAssertionError: No ENV variable {ae}\n")
         except KeyError as ke:
             print(f"\nKeyError: No ENV variable {ke}\n")
-        # todo: set .env variable for SummitMail class
         self.api_key = cfg['ENV']['airtable_api_key']
         self.base_id = cfg['ENV']['airtable_base_id']
         self.cfg_name = cfg['ENV']['cfg_name']
 
-    def connect_to_airtable(self):
+    def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
         # todo: input for 'table name' and ensuing functionality
         print("loading main app...")
@@ -173,13 +172,15 @@ class LoadNewSession(QWidget):
         btn_group = QHBoxLayout()
         btn_back = QPushButton("Back")
         btn_save = QPushButton("Save cfg")
-        btn_use_once = QPushButton("Use Once")
+        btn_use_once = QPushButton("Use once")
         btn_group.addWidget(btn_back)
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch_window(0))
-        # todo: close window on save, show transport dialog (back/go to mailer)
         btn_save.clicked.connect(self.save_cfg)
+        btn_save.clicked.connect(lambda: self.switch_window(3))
+        btn_use_once.clicked.connect(self.set_airtable_creds)
+        btn_use_once.clicked.connect(lambda: self.switch_window(3))
         # add all layouts
         layout.addLayout(layout_grid)
         layout.addLayout(btn_group)
@@ -207,6 +208,11 @@ class LoadNewSession(QWidget):
         with open(f'Cfg/{self.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
 
+    def set_airtable_creds(self):
+        """ this function will send credentials to MainWindow class in order to init Airtable """
+        print("loading main app...")
+        base, key, cfg = self.base_id, self.api_key, self.cfg_name
+        return base, key, cfg
 
 class LoadMainWindow(QWidget):
 
@@ -266,7 +272,7 @@ class LoadMainWindow(QWidget):
         layout.addLayout(btn_group_edit_test)
         # setup window
         self.setLayout(layout)
-        self.setGeometry(120, 76, 1200, 748)
+        self.setGeometry(311, 186, 817, 600)
 
     def collect_data(self):
         """ connect to AirTable; return data before sending """
@@ -337,7 +343,7 @@ class Controller:
         if num == 2:
             self.show_load_new()
         if num == 3:
-            base, key, cfg = self.load_cfg.connect_to_airtable()
+            base, key, cfg = self.load_cfg.set_airtable_creds()
             self.show_load_main(base, key, cfg)
             try:
                 if self.load_cfg:
