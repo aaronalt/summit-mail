@@ -134,7 +134,8 @@ class LoadFromSaved(QWidget):
         """ this function will send credentials to MainWindow class in order to init Airtable """
         # todo: input for 'table name' and ensuing functionality
         print("loading main app...")
-        return LoadMainWindow(self.base_id, self.api_key, self.cfg_name)
+        base, key, cfg = self.base_id, self.api_key, self.cfg_name
+        return base, key, cfg
 
 
 class LoadNewSession(QWidget):
@@ -177,6 +178,7 @@ class LoadNewSession(QWidget):
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch_window(0))
+        # todo: close window on save, show transport dialog (back/go to mailer)
         btn_save.clicked.connect(self.save_cfg)
         # add all layouts
         layout.addLayout(layout_grid)
@@ -211,10 +213,11 @@ class LoadMainWindow(QWidget):
     switch = Signal(int)
     data = []
 
-    def __init__(self, base_id, api_key, base_name):
+    def __init__(self, base_id, api_key, cfg_name, base_name="New Contacts"):
         QWidget.__init__(self)
         self.base_id = base_id
         self.api_key = api_key
+        self.cfg_name = cfg_name
         self.base_name = base_name
         self.setWindowTitle("SummitMailer")
 
@@ -230,6 +233,7 @@ class LoadMainWindow(QWidget):
         btn_group_collect_run_progress.addWidget(btn_run)
         btn_group_collect_run_progress.addWidget(progress)
         btn_group_collect_run_progress.addWidget(label_base)
+        btn_collect.clicked.connect(self.collect_data)
         # widget group 2: table
         """
         access airtable here:
@@ -239,9 +243,9 @@ class LoadMainWindow(QWidget):
         table_model = TableModel(data)
         """
         table = QHBoxLayout()
-        table_model = TableModel(self.data)
+        self.table_model = TableModel(self.data)
         table_view = QTableView()
-        table_view.setModel(table_model)
+        table_view.setModel(self.table_model)
         table.addWidget(table_view)
         # widget group 3: test/edit html
         btn_group_edit_test = QHBoxLayout()
@@ -263,7 +267,7 @@ class LoadMainWindow(QWidget):
         self.setLayout(layout)
         self.setGeometry(120, 76, 1200, 748)
 
-    def connect_airtable(self):
+    def collect_data(self):
         """ connect to AirTable; return data before sending """
         # todo: add error logic
         airtable = SummitMail(self.base_id, self.api_key)
@@ -271,7 +275,8 @@ class LoadMainWindow(QWidget):
         for c in client_objects:
             client = [c.name, c.country, c.website, c.email]
             self.data.append(client)
-        return self.data
+        self.table_model.layoutChanged.emit()
+        return self.table_model
 
 
 class TableModel(QAbstractTableModel):
@@ -330,7 +335,8 @@ class Controller:
         if num == 2:
             self.show_load_new()
         if num == 3:
-            self.show_load_main(self.load_cfg.api_key, self.load_cfg.base_id, self.load_cfg.base_id)
+            base, key, cfg = self.load_cfg.connect_to_airtable()
+            self.show_load_main(base, key, cfg)
             try:
                 if self.load_cfg:
                     self.load_cfg.close()
@@ -357,8 +363,8 @@ class Controller:
         self.load_new.switch.connect(self.loader)
         self.load_new.show()
 
-    def show_load_main(self, api_key, base_id, base_name='SummitMail BaseX'):
-        self.load_main = LoadMainWindow(api_key, base_id, base_name)
+    def show_load_main(self, base_id, api_key, cfg_name):
+        self.load_main = LoadMainWindow(base_id, api_key, cfg_name)
         self.load_main.switch.connect(self.loader)
         self.load_main.show()
 
