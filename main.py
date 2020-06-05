@@ -1,6 +1,6 @@
 import os
 from PySide2.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView
+    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, Signal, QAbstractTableModel
 import sys
@@ -244,9 +244,10 @@ class LoadMainWindow(QWidget):
         """
         table = QHBoxLayout()
         self.table_model = TableModel(self.data)
-        table_view = QTableView()
-        table_view.setModel(self.table_model)
-        table.addWidget(table_view)
+        self.table_view = QTableView()
+        self.table_view.setModel(self.table_model)
+        self.table_view.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        table.addWidget(self.table_view)
         # widget group 3: test/edit html
         btn_group_edit_test = QHBoxLayout()
         btn_generate_output = QPushButton("generate output")
@@ -276,6 +277,7 @@ class LoadMainWindow(QWidget):
             client = [c.name, c.country, c.website, c.email]
             self.data.append(client)
         self.table_model.layoutChanged.emit()
+        self.table_view.resizeColumnsToContents()
         return self.table_model
 
 
