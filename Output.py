@@ -1,5 +1,5 @@
 import os
-from datetime import date
+import datetime
 from ClientFilter import ClientFilter
 
 
@@ -11,14 +11,13 @@ class Output:
         self.clients_contacted = clients_contacted
 
     def get_date_and_increment(self):
-        today = date.today()
-        date_today = ".".join([str(today.year), str(today.month), str(today.day), self.output_filename, 'txt'])
-        file_dated = self.path + date_today
-        i = 0
+        d = datetime.datetime.now()
+        date_today = "-".join([str(d.year), str(d.month), str(d.day), self.output_filename])
+        i = 1
+        file_dated = f'{self.path}{date_today}__{i}.txt'
         while os.path.exists(file_dated):
             i += 1
-            txt = file_dated.rfind('.')
-            file_dated = file_dated[:txt] + str(i) + file_dated[txt:]
+            file_dated = f'{self.path}{date_today}__{i}.txt'
         return file_dated
 
     def write(self):
