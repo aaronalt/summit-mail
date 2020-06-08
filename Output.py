@@ -17,7 +17,7 @@ class Output:
         i = 0
         while os.path.exists(file_dated):
             i += 1
-            file_dated += i
+            file_dated = self.path + str(i) + date_today
         return file_dated
 
     def write(self):
