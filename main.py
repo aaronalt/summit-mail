@@ -132,6 +132,7 @@ class LoadFromSaved(QWidget):
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
         # todo: input for 'table name' and ensuing functionality
+        # todo: set function to single instead of duplicate
         print("loading main app...")
         base, key, cfg = self.base_id, self.api_key, self.cfg_name
         return base, key, cfg
