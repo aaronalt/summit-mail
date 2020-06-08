@@ -8,6 +8,7 @@ import configparser
 
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 from SummitMail import SummitMail
+from Output import Output
 
 
 class Welcome(QWidget):
@@ -211,14 +212,17 @@ class LoadNewSession(QWidget):
 
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
+        # todo: remove duplication
         print("loading main app...")
         base, key, cfg = self.base_id, self.api_key, self.cfg_name
         return base, key, cfg
 
+
 class LoadMainWindow(QWidget):
 
     switch = Signal(int)
-    data = []
+    data = list()
+    client_objects = list()
 
     def __init__(self, base_id, api_key, cfg_name, base_name="New Contacts"):
         QWidget.__init__(self)
@@ -267,6 +271,7 @@ class LoadMainWindow(QWidget):
         btn_group_edit_test.addWidget(label_view_edit)
         btn_group_edit_test.addWidget(btn_edit_html)
         btn_group_edit_test.addWidget(btn_edit_txt)
+        btn_generate_output.clicked.connect(self.generate_output)
         # add layouts
         layout.addLayout(btn_group_collect_run_progress)
         layout.addLayout(table)
@@ -279,13 +284,30 @@ class LoadMainWindow(QWidget):
         """ connect to AirTable; return data before sending """
         # todo: add error logic
         airtable = SummitMail(self.base_id, self.api_key)
-        client_objects = airtable.daily_25()
-        for c in client_objects:
+        self.client_objects = airtable.daily_25()
+        for c in self.client_objects:
             client = [c.name, c.country, c.website, c.email]
             self.data.append(client)
         self.table_model.layoutChanged.emit()
         self.table_view.resizeColumnsToContents()
         return self.table_model
+
+    def generate_output(self):
+        if self.data:
+            output = Output(self.client_objects)
+            path, filename = output.write()
+            self.output_dialog(os.path.join(path, filename))
+        else:
+            self.output_dialog("No data to write")
+
+    def output_dialog(self, path_or_nodata):
+        # todo: finish writing function
+        dialog = QDialog(self)
+        dialog_layout = QVBoxLayout()
+        label_notice = QLabel(f"Output generated at:\n{path_or_nodata}", dialog)
+        label_notice.setContentsMargins(5, 5, 5, 5)
+        dialog.setWindowModality(Qt.ApplicationModal)
+        dialog.exec_()
 
 
 class TableModel(QAbstractTableModel):
