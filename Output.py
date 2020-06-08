@@ -12,12 +12,13 @@ class Output:
 
     def get_date_and_increment(self):
         today = date.today()
-        date_today = ".".join([str(today.year), str(today.month), str(today.day), self.output_filename])
+        date_today = ".".join([str(today.year), str(today.month), str(today.day), self.output_filename, 'txt'])
         file_dated = self.path + date_today
         i = 0
         while os.path.exists(file_dated):
             i += 1
-            file_dated = self.path + str(i) + date_today
+            txt = file_dated.rfind('.')
+            file_dated = file_dated[:txt] + str(i) + file_dated[txt:]
         return file_dated
 
     def write(self):
