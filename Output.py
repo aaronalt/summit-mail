@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from ClientFilter import ClientFilter
 
@@ -9,17 +10,19 @@ class Output:
         self.output_filename = output_filename
         self.clients_contacted = clients_contacted
 
-    def get_date(self):
+    def get_date_and_increment(self):
         today = date.today()
-        date_string = str(today.day), str(today.month), str(today.year)
-        date_today = "_".join(date_string)
-        name_date = self.output_filename, date_today
-        file_dated = self.path + "_".join(name_date) + ".txt"
+        date_today = ".".join([str(today.year), str(today.month), str(today.day), self.output_filename])
+        file_dated = self.path + date_today
+        i = 0
+        while os.path.exists(file_dated):
+            i += 1
+            file_dated += i
         return file_dated
 
     def write(self):
-        f = self.get_date()
-        with open(f, 'wt') as file:
+        file_dated = self.get_date_and_increment()
+        with open(file_dated, 'wt') as file:
             total = 0
             emailed = []
             for client in self.clients_contacted:
