@@ -43,5 +43,11 @@ class SummitMail:
         return self.client_objects
 
     # todo: add Email object functions
-    # email = Email("App Development Support", "Inputs/contact_new_clients")
-    # email.send_external(client_objects)
+    def send_to_all(self, subject, file_source):
+        """
+        send email to all clients in the list
+        subject = email subject
+        file_source = path/to/email.html & path/to/email.txt
+        """
+        # email = Email("App Development Support", "Inputs/contact_new_clients")
+        # email.send_external(client_objects)
