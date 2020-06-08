@@ -1,5 +1,4 @@
 from datetime import date
-
 from ClientFilter import ClientFilter
 
 
@@ -33,3 +32,4 @@ class Output:
             file.write('\n--------------------\n')
             file.write(f'Total emailed: {total}\n')
             file.write('--------------------')
+        return self.path, self.output_filename
