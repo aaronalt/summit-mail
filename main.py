@@ -11,6 +11,44 @@ from SummitMail import SummitMail
 from Output import Output
 
 
+class Creds:
+
+    def __init__(self, base_id, api_key, cfg_name):
+        self.base_id = base_id
+        self.api_key = api_key
+        self.cfg_name = cfg_name
+
+    @property
+    def base_id(self):
+        print("getting base_id...")
+        return self._base_id
+
+    @base_id.setter
+    def base_id(self, value):
+        print("setting base_id")
+        self._base_id = value
+
+    @property
+    def api_key(self):
+        print("getting api_key...")
+        return self._api_key
+
+    @api_key.setter
+    def api_key(self, value):
+        print("setting api_key...")
+        self._api_key = value
+
+    @property
+    def cfg_name(self):
+        print("getting cfg_name...")
+        return self._cfg_name
+
+    @cfg_name.setter
+    def cfg_name(self, value):
+        print("setting cfg_name...")
+        self._cfg_name = value
+
+
 class Welcome(QWidget):
 
     switch = Signal(int)
@@ -66,9 +104,9 @@ class Welcome(QWidget):
 class LoadFromSaved(QWidget):
 
     switch = Signal(int)
-    api_key = ''
-    base_id = ''
-    cfg_name = ''
+    api_key=''
+    base_id=''
+    cfg_name=''
     # todo: add table name field from user input
     # table_name = ''
 
@@ -100,7 +138,6 @@ class LoadFromSaved(QWidget):
         btn_group.addWidget(go)
         back.clicked.connect(lambda: self.switch_window(0))
         go.clicked.connect(lambda: self.switch_window(3))
-        go.clicked.connect(self.set_airtable_creds)
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(self.list_cfgs)
@@ -132,11 +169,13 @@ class LoadFromSaved(QWidget):
 
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
-        # todo: input for 'table name' and ensuing functionality
-        # todo: set function to single instead of duplicate
         print("loading main app...")
+        # todo: input for 'table name' and ensuing functionality {integrate list of table names in cfg}
+
+        # todo: set function to single instead of duplicate
         base, key, cfg = self.base_id, self.api_key, self.cfg_name
-        return base, key, cfg
+        creds = Creds(base, key, cfg)
+        return creds
 
 
 class LoadNewSession(QWidget):
@@ -212,7 +251,6 @@ class LoadNewSession(QWidget):
 
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
-        # todo: remove duplication
         print("loading main app...")
         base, key, cfg = self.base_id, self.api_key, self.cfg_name
         return base, key, cfg
@@ -366,8 +404,8 @@ class Controller:
         if num == 2:
             self.show_load_new()
         if num == 3:
-            base, key, cfg = self.load_cfg.set_airtable_creds()
-            self.show_load_main(base, key, cfg)
+            creds = self.load_cfg.set_airtable_creds()
+            self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
             try:
                 if self.load_cfg:
                     self.load_cfg.close()
