@@ -10,9 +10,10 @@ class SummitMail:
     d = datetime.datetime.now()
     date = f'{d.day}/{d.month}/{d.year}'
 
-    def __init__(self, base_id, api_key, table_name="New Contacts"):
+    def __init__(self, base_id, api_key, cfg_name, table_name="New Contacts"):
         self.base_id = base_id
         self.api_key = api_key
+        self.cfg_name = cfg_name
         self.table_name = table_name
         self._contacts = Airtable(self.base_id, self.table_name, self.api_key)
         self.client_objects = []
@@ -43,11 +44,12 @@ class SummitMail:
         return self.client_objects
 
     # todo: add Email object functions
-    def send_to_all(self, subject, file_source):
+    def send_to_all(self, subject, files_source):
         """
         send email to all clients in the list
         subject = email subject
-        file_source = path/to/email.html & path/to/email.txt
+        files_source = path/to/email.html & path/to/email.txt
         """
+        email = Email(subject, files_source)
         # email = Email("App Development Support", "Inputs/contact_new_clients")
         # email.send_external(client_objects)

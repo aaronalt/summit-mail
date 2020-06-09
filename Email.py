@@ -46,10 +46,6 @@ class Email:
         # to_filter = ClientFilter(csv_file)
         # to_contact = to_filter.filter_emails()
         output = Output(clients_list)
-        print("\nClient list to be emailed:\n---------")
-        for i in clients_list:
-            print(i.name)
-        print("-------")
         if write_output:
             output.write()
         proceed = input("Proceed  with emailing? y/n ... ")

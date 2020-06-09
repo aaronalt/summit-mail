@@ -1,15 +1,15 @@
 import os
+import sys
+import configparser
+from SummitMail import SummitMail
+from Output import Output
+from Email import Email
 from PySide2.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
     QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea, QDialog, \
     QDialogButtonBox
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, Signal, QAbstractTableModel
-import sys
-import configparser
-
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
-from SummitMail import SummitMail
-from Output import Output
 
 
 class Creds:
@@ -180,9 +180,12 @@ class LoadFromSaved(QWidget):
 class LoadNewSession(QWidget):
 
     switch = Signal(int)
-    cfg_name = ''
-    api_key = ''
-    base_id = ''
+    cfg_name = str()
+    api_key = str()
+    base_id = str()
+    sender_email = str()
+    sender_email_pw = str()
+    test_email = str()
 
     def __init__(self):
         QWidget.__init__(self)
@@ -193,12 +196,21 @@ class LoadNewSession(QWidget):
         base = QLabel("Base ID")
         apikey = QLabel("API Key")
         cfg_name = QLabel("Name")
+        label_sender = QLabel("Sender Email")
+        label_sender_pw = QLabel("Email Password")
+        label_test_email = QLabel("Test Email")
         edit_base_id = QLineEdit()
         edit_api_key = QLineEdit()
         edit_cfg_name = QLineEdit()
+        edit_sender_email = QLineEdit()
+        edit_sender_email_pw = QLineEdit()
+        edit_test_email = QLineEdit()
         edit_base_id.editingFinished.connect(lambda: self.set_base(edit_base_id.text()))
         edit_api_key.editingFinished.connect(lambda: self.set_key(edit_api_key.text()))
         edit_cfg_name.editingFinished.connect(lambda: self.set_name(edit_cfg_name.text()))
+        edit_sender_email.editingFinished.connect(lambda: self.set_sender_email(edit_sender_email.text()))
+        edit_sender_email_pw.editingFinished.connect(lambda: self.set_sender_email_pw(edit_sender_email_pw.text()))
+        edit_test_email.editingFinished.connect(lambda: self.set_test_email(edit_test_email.text()))
         # setup grid layout
         layout_grid = QGridLayout()
         layout_grid.setSpacing(10)
@@ -208,6 +220,12 @@ class LoadNewSession(QWidget):
         layout_grid.addWidget(edit_base_id, 2, 1)
         layout_grid.addWidget(apikey, 3, 0)
         layout_grid.addWidget(edit_api_key, 3, 1)
+        layout_grid.addWidget(label_sender, 4, 0)
+        layout_grid.addWidget(edit_sender_email, 4, 1)
+        layout_grid.addWidget(label_sender_pw, 5, 0)
+        layout_grid.addWidget(edit_sender_email_pw, 5, 1)
+        layout_grid.addWidget(label_test_email, 6, 0)
+        layout_grid.addWidget(edit_test_email, 6, 1)
         # widget 2: buttons
         btn_group = QHBoxLayout()
         btn_back = QPushButton("Back")
@@ -239,11 +257,23 @@ class LoadNewSession(QWidget):
     def set_name(self, text):
         self.cfg_name = text
 
+    def set_sender_email(self, text):
+        self.sender_email = text
+
+    def set_sender_email_pw(self, text):
+        self.sender_email_pw = text
+
+    def set_test_email(self, text):
+        self.test_email = text
+
     def save_cfg(self):
         cfg = configparser.ConfigParser()
         cfg['ENV'] = {'cfg_name': self.cfg_name,
                       'airtable_api_key': self.api_key,
                       'airtable_base_id': self.base_id}
+        cfg['settings'] = {'sender_email': self.sender_email,
+                           'sender_email_password': self.sender_email_pw,
+                           'test_email': self.test_email}
         with open(f'Cfg/{self.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
 
@@ -282,13 +312,6 @@ class LoadMainWindow(QWidget):
         btn_group_collect_run_progress.addWidget(label_base)
         btn_collect.clicked.connect(self.collect_data)
         # widget group 2: table
-        """
-        access airtable here:
-        # data = [
-        #         ["Company1", "country", "website", "etc."],
-        #     ]
-        table_model = TableModel(data)
-        """
         table = QHBoxLayout()
         self.table_model = TableModel(self.data)
         self.table_view = QTableView()
@@ -322,7 +345,7 @@ class LoadMainWindow(QWidget):
 
     def collect_data(self):
         """ connect to AirTable; return data before sending """
-        airtable = SummitMail(self.base_id, self.api_key)
+        airtable = SummitMail(self.base_id, self.api_key, self.cfg_name)
         self.client_objects = airtable.daily_25()
         for c in self.client_objects:
             client = [c.name, c.country, c.website, c.email]
@@ -330,6 +353,9 @@ class LoadMainWindow(QWidget):
         self.table_model.layoutChanged.emit()
         self.table_view.resizeColumnsToContents()
         return self.table_model
+
+    def run(self):
+        airtable = SummitMail(self.base_id, self.api_key, self.cfg_name)
 
     def generate_output(self):
         if self.data:
@@ -412,16 +438,15 @@ class Controller:
             if num == 3:
                 creds = self.load_cfg.set_airtable_creds()
                 self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
+                self.welcome.close()
             if num == 4:
                 creds = self.load_new.set_airtable_creds()
-                # todo: add more specific exceptions
-                try:
-                    self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
-                    self.load_main.test_call()
-                except KeyError:
-                    print("credentials provided do not match existing")
-                finally:
-                    self.load_main.close()
+                # todo: add more specific exceptions/error logic
+                self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
+                self.load_main.test_call()
+                self.welcome.close()
+                self.load_new.close()
+
 
     def show_welcome(self):
         self.welcome = Welcome()
