@@ -324,7 +324,6 @@ class LoadMainWindow(QWidget):
 
     def collect_data(self):
         """ connect to AirTable; return data before sending """
-        # todo: add error logic
         airtable = SummitMail(self.base_id, self.api_key)
         self.client_objects = airtable.daily_25()
         for c in self.client_objects:
@@ -341,21 +340,19 @@ class LoadMainWindow(QWidget):
             output_filename = os.path.join(path, filename)
             self.output_dialog(output_filename)
         else:
-            self.output_dialog("none")
+            self.output_dialog("")
 
     def output_dialog(self, path_or_nodata):
+        # todo: load generated output file instead of path
         layout = QVBoxLayout()
         dialog = QDialog(self)
-        # add widget 1: notice
         label_notice = QLabel()
         if path_or_nodata:
             label_notice = QLabel(f"Output generated at:\n{path_or_nodata}", dialog)
         else:
             label_notice = QLabel("No data to write", dialog)
         label_notice.setMargin(25)
-        # add widget 2: buttonbox
         btn_ok = QDialogButtonBox(QDialogButtonBox.Ok)
-        # add widgets to layout
         layout.addWidget(label_notice)
         layout.addWidget(btn_ok)
         dialog.setGeometry(511, 380, 200, 100)

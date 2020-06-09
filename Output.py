@@ -39,4 +39,4 @@ class Output:
             file.write(f'New Estimates: 0\n')
             file.write(f'New Orders: 0\n')
             file.write('---')
-        return self.path, self.output_filename
+        return self.path, file_dated
