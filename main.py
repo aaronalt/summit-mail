@@ -104,15 +104,15 @@ class Welcome(QWidget):
 class LoadFromSaved(QWidget):
 
     switch = Signal(int)
-    api_key=''
-    base_id=''
-    cfg_name=''
     # todo: add table name field from user input
     # table_name = ''
 
-    def __init__(self):
+    def __init__(self, base_id='', api_key='', cfg_name=''):
         QWidget.__init__(self)
         self.setWindowTitle("Load from saved cfg")
+        self.base_id = base_id
+        self.api_key = api_key
+        self.cfg_name = cfg_name
 
         layout = QVBoxLayout()
         # widget 1: prompt
@@ -218,10 +218,9 @@ class LoadNewSession(QWidget):
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch_window(0))
+        # todo: add dialog for when 'saved' is clicked
         btn_save.clicked.connect(self.save_cfg)
-        btn_save.clicked.connect(lambda: self.switch_window(3))
-        btn_use_once.clicked.connect(self.set_airtable_creds)
-        btn_use_once.clicked.connect(lambda: self.switch_window(3))
+        btn_use_once.clicked.connect(lambda: self.switch_window(4))
         # add all layouts
         layout.addLayout(layout_grid)
         layout.addLayout(btn_group)
@@ -251,7 +250,7 @@ class LoadNewSession(QWidget):
 
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
-        print("loading main app...")
+        print("loading main app from new cfg...")
         base, key, cfg = self.base_id, self.api_key, self.cfg_name
         return base, key, cfg
 
@@ -318,6 +317,10 @@ class LoadMainWindow(QWidget):
         self.setLayout(layout)
         self.setGeometry(311, 186, 817, 600)
 
+    def test_call(self):
+        connect = SummitMail(self.base_id, self.api_key)
+        return connect
+
     def collect_data(self):
         """ connect to AirTable; return data before sending """
         # todo: add error logic
@@ -366,7 +369,6 @@ class TableModel(QAbstractTableModel):
         try:
             len(self._data) == 0
         except IndexError as e:
-            print(f"No data in table row: {e}")
             return 0
         return len(self._data)
 
@@ -376,7 +378,6 @@ class TableModel(QAbstractTableModel):
         try:
             len(self._data[0]) == 0
         except IndexError as e:
-            print(f"No data in table column: {e}")
             return 0
         return len(self._data[0])
 
@@ -387,35 +388,33 @@ class Controller:
         pass
 
     def loader(self, num):
-        if num == 0:
-            # todo: fix page closing logic when navigating back to welcome screen
-            try:
-                if self.load_cfg:
-                    self.load_cfg.close()
-                if self.load_new:
-                    self.load_new.close()
-            except AttributeError:
-                if self.load_new:
-                    self.load_new.close()
-                if self.load_cfg:
-                    self.load_cfg.close()
-        if num == 1:
-            self.show_load_cfg()
-        if num == 2:
-            self.show_load_new()
-        if num == 3:
-            creds = self.load_cfg.set_airtable_creds()
-            self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
-            try:
-                if self.load_cfg:
-                    self.load_cfg.close()
-                if self.load_new:
-                    self.load_new.close()
-            except AttributeError:
-                if self.load_new:
-                    self.load_new.close()
-                if self.load_cfg:
-                    self.load_cfg.close()
+        try:
+            if self.load_cfg:
+                self.load_cfg.close()
+        except AttributeError:
+            if self.load_new:
+                self.load_new.close()
+        finally:
+            if num == 0:
+                # todo: fix page closing logic when navigating back to welcome screen
+                print("num=0")
+            if num == 1:
+                self.show_load_cfg()
+            if num == 2:
+                self.show_load_new()
+            if num == 3:
+                creds = self.load_cfg.set_airtable_creds()
+                self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
+            if num == 4:
+                base, key, cfg = self.load_new.set_airtable_creds()
+                # todo: add more specific exceptions
+                try:
+                    self.show_load_main(base, key, cfg)
+                    self.load_main.test_call()
+                except KeyError:
+                    print("credentials provided do not match existing")
+                finally:
+                    self.load_main.close()
 
     def show_welcome(self):
         self.welcome = Welcome()
