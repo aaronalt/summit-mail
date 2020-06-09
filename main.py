@@ -389,11 +389,10 @@ class Controller:
 
     def loader(self, num):
         try:
-            if self.load_cfg:
-                self.load_cfg.close()
+            self.load_cfg.close()
+            self.load_new.close()
         except AttributeError:
-            if self.load_new:
-                self.load_new.close()
+            pass
         finally:
             if num == 0:
                 # todo: fix page closing logic when navigating back to welcome screen
