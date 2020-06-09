@@ -173,9 +173,7 @@ class LoadFromSaved(QWidget):
         print("loading main app...")
         # todo: input for 'table name' and ensuing functionality {integrate list of table names in cfg}
 
-        # todo: set function to single instead of duplicate
-        base, key, cfg = self.base_id, self.api_key, self.cfg_name
-        creds = Creds(base, key, cfg)
+        creds = Creds(self.base_id, self.api_key, self.cfg_name)
         return creds
 
 
@@ -252,8 +250,8 @@ class LoadNewSession(QWidget):
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
         print("loading main app from new cfg...")
-        base, key, cfg = self.base_id, self.api_key, self.cfg_name
-        return base, key, cfg
+        creds = Creds(self.base_id, self.api_key, self.cfg_name)
+        return creds
 
 
 class LoadMainWindow(QWidget):
@@ -415,10 +413,10 @@ class Controller:
                 creds = self.load_cfg.set_airtable_creds()
                 self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
             if num == 4:
-                base, key, cfg = self.load_new.set_airtable_creds()
+                creds = self.load_new.set_airtable_creds()
                 # todo: add more specific exceptions
                 try:
-                    self.show_load_main(base, key, cfg)
+                    self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
                     self.load_main.test_call()
                 except KeyError:
                     print("credentials provided do not match existing")
