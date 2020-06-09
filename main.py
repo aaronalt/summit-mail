@@ -1,6 +1,7 @@
 import os
 from PySide2.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea, QDialog
+    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea, QDialog, \
+    QDialogButtonBox
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, Signal, QAbstractTableModel
 import sys
@@ -337,17 +338,30 @@ class LoadMainWindow(QWidget):
         if self.data:
             output = Output(self.client_objects)
             path, filename = output.write()
-            self.output_dialog(os.path.join(path, filename))
+            output_filename = os.path.join(path, filename)
+            self.output_dialog(output_filename)
         else:
-            self.output_dialog("No data to write")
+            self.output_dialog("none")
 
     def output_dialog(self, path_or_nodata):
-        # todo: finish writing function
+        layout = QVBoxLayout()
         dialog = QDialog(self)
-        dialog_layout = QVBoxLayout()
-        label_notice = QLabel(f"Output generated at:\n{path_or_nodata}", dialog)
-        label_notice.setContentsMargins(5, 5, 5, 5)
+        # add widget 1: notice
+        label_notice = QLabel()
+        if path_or_nodata:
+            label_notice = QLabel(f"Output generated at:\n{path_or_nodata}", dialog)
+        else:
+            label_notice = QLabel("No data to write", dialog)
+        label_notice.setMargin(25)
+        # add widget 2: buttonbox
+        btn_ok = QDialogButtonBox(QDialogButtonBox.Ok)
+        # add widgets to layout
+        layout.addWidget(label_notice)
+        layout.addWidget(btn_ok)
+        dialog.setGeometry(511, 380, 200, 100)
         dialog.setWindowModality(Qt.ApplicationModal)
+        dialog.setLayout(layout)
+        btn_ok.accepted.connect(dialog.accept)
         dialog.exec_()
 
 
@@ -395,7 +409,6 @@ class Controller:
             pass
         finally:
             if num == 0:
-                # todo: fix page closing logic when navigating back to welcome screen
                 print("num=0")
             if num == 1:
                 self.show_load_cfg()
