@@ -355,6 +355,7 @@ class LoadMainWindow(QWidget):
         return self.table_model
 
     def run(self):
+        # todo: finish funciton
         airtable = SummitMail(self.base_id, self.api_key, self.cfg_name)
 
     def generate_output(self):
@@ -425,12 +426,11 @@ class Controller:
     def loader(self, num):
         try:
             self.load_cfg.close()
-            self.load_new.close()
         except AttributeError:
             pass
         finally:
             if num == 0:
-                print("num=0")
+                self.load_new.close()
             if num == 1:
                 self.show_load_cfg()
             if num == 2:
@@ -446,7 +446,6 @@ class Controller:
                 self.load_main.test_call()
                 self.welcome.close()
                 self.load_new.close()
-
 
     def show_welcome(self):
         self.welcome = Welcome()
