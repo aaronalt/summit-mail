@@ -28,8 +28,7 @@ class Output:
             emailed = []
             for client in self.clients_contacted:
                 emailed.append(client)
-            file.write(date_today)
-            file.write(f'\n{date_today}\n---\n')
+            file.write(f'{date_today}\n---\n')
             while emailed:
                 client = emailed.pop()
                 total += 1
