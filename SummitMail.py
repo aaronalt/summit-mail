@@ -1,6 +1,5 @@
 import datetime
 from airtable import Airtable
-import os
 from Client import Client
 from Email import Email
 
@@ -43,7 +42,6 @@ class SummitMail:
         print("done collecting data")
         return self.client_objects
 
-    # todo: add Email object functions
     def send_to_all(self, subject, files_source):
         """
         send email to all clients in the list
@@ -51,5 +49,5 @@ class SummitMail:
         files_source = path/to/email.html & path/to/email.txt
         """
         email = Email(subject, files_source, self.cfg_name)
+        email.send_external(self.client_objects)
         # email = Email("App Development Support", "Inputs/contact_new_clients")
-        # email.send_external(client_objects)
