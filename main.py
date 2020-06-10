@@ -311,6 +311,7 @@ class LoadMainWindow(QWidget):
         btn_group_collect_run_progress.addWidget(progress)
         btn_group_collect_run_progress.addWidget(label_base)
         btn_collect.clicked.connect(self.collect_data)
+        btn_run.clicked.connect(self.before_send_dialog)
         # widget group 2: table
         table = QHBoxLayout()
         self.table_model = TableModel(self.data)
@@ -385,6 +386,33 @@ class LoadMainWindow(QWidget):
         dialog.setLayout(layout)
         btn_ok.accepted.connect(dialog.accept)
         dialog.exec_()
+
+    def before_send_dialog(self):
+        layout_grid = QGridLayout()
+
+        label_subject = QLabel("Subject")
+        label_files_source = QLabel("Files Source")
+        edit_subject = QLineEdit()
+        edit_files_source = QLineEdit()
+        btn_edit = QPushButton("edit")
+
+        dialog = QDialog(self)
+        dialog.setGeometry(511, 380, 400, 150)
+        btn_send = QDialogButtonBox(QDialogButtonBox.Apply)
+        btn_back = QDialogButtonBox(QDialogButtonBox.Cancel)
+        btn_back.clicked.connect(dialog.accept)
+
+        layout_grid.addWidget(label_subject, 1, 0)
+        layout_grid.addWidget(edit_subject, 1, 1)
+        layout_grid.addWidget(label_files_source, 2, 0)
+        layout_grid.addWidget(edit_files_source, 2, 1)
+        layout_grid.addWidget(btn_edit, 3, 0)
+        layout_grid.addWidget(btn_back, 4, 0)
+        layout_grid.addWidget(btn_send, 4, 1)
+
+        dialog.setLayout(layout_grid)
+        dialog.exec_()
+
 
 
 class TableModel(QAbstractTableModel):
