@@ -1,4 +1,4 @@
-# summit-mail
+# SummitMailer
 A program to automate the mass sending of emails after fairs/conferences/events. 
 ## how to run
 install python3.7 & pipenv
