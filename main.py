@@ -180,17 +180,17 @@ class LoadFromSaved(QWidget):
 class LoadNewSession(QWidget):
 
     switch = Signal(int)
-    cfg_name = str()
+
     api_key = str()
     base_id = str()
     sender_email = str()
     sender_email_pw = str()
     test_email = str()
+    cfg_name = str()
 
     def __init__(self):
         QWidget.__init__(self)
         self.setWindowTitle("Load new cfg")
-
         layout = QVBoxLayout()
         # widget 1: edit lines
         base = QLabel("Base ID")
@@ -289,6 +289,8 @@ class LoadMainWindow(QWidget):
     switch = Signal(int)
     data = list()
     client_objects = list()
+    subject = str()
+    files_source = str()
 
     def __init__(self, base_id, api_key, cfg_name, base_name="New Contacts"):
         QWidget.__init__(self)
@@ -389,19 +391,18 @@ class LoadMainWindow(QWidget):
 
     def before_send_dialog(self):
         layout_grid = QGridLayout()
-
         label_subject = QLabel("Subject")
         label_files_source = QLabel("Files Source")
         edit_subject = QLineEdit()
         edit_files_source = QLineEdit()
+        edit_subject.editingFinished.connect(lambda: self.set_subject(edit_subject.text()))
+        edit_files_source.editingFinished.connect(lambda: self.set_files_source(edit_files_source.text()))
         btn_edit = QPushButton("edit")
-
         dialog = QDialog(self)
         dialog.setGeometry(511, 380, 400, 150)
         btn_send = QDialogButtonBox(QDialogButtonBox.Apply)
         btn_back = QDialogButtonBox(QDialogButtonBox.Cancel)
         btn_back.clicked.connect(dialog.accept)
-
         layout_grid.addWidget(label_subject, 1, 0)
         layout_grid.addWidget(edit_subject, 1, 1)
         layout_grid.addWidget(label_files_source, 2, 0)
@@ -409,11 +410,16 @@ class LoadMainWindow(QWidget):
         layout_grid.addWidget(btn_edit, 3, 0)
         layout_grid.addWidget(btn_back, 4, 0)
         layout_grid.addWidget(btn_send, 4, 1)
-
         dialog.setLayout(layout_grid)
         dialog.exec_()
 
+    def set_subject(self, text):
+        print(f"subject set, \'{text}\'")
+        self.subject = text
 
+    def set_files_source(self, text):
+        print(f"files_source set, \'{text}\'")
+        self.files_source = text
 
 class TableModel(QAbstractTableModel):
 
