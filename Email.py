@@ -15,9 +15,8 @@ class Email:
         self.files_source = f'{files_source}.txt'
 
         self.cfg_name = f'Cfg/{cfg_name}.ini'
-        print(self.cfg_name)
         self.cfg = configparser.ConfigParser()
-        print(self.cfg.read(self.cfg_name))
+        self.cfg.read(self.cfg_name)
         self.sender_email = self.cfg['settings']['sender_email']
         self.password = self.cfg['settings']['sender_email_password']
         self.test_email = self.cfg['settings']['test_email']
