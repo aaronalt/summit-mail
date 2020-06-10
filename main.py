@@ -51,7 +51,6 @@ class Creds:
 
 
 class Welcome(QWidget):
-
     switch = Signal(int)
 
     def __init__(self):
@@ -103,8 +102,8 @@ class Welcome(QWidget):
 
 
 class LoadFromSaved(QWidget):
-
     switch = Signal(int)
+
     # todo: add table name field from user input
     # table_name = ''
 
@@ -156,8 +155,8 @@ class LoadFromSaved(QWidget):
         cfg = configparser.ConfigParser()
         cfg.read(os.path.join('Cfg/', item))
         try:
-            assert(cfg['ENV']['airtable_base_id'])
-            assert(cfg['ENV']['airtable_api_key'])
+            assert (cfg['ENV']['airtable_base_id'])
+            assert (cfg['ENV']['airtable_api_key'])
             assert (cfg['ENV']['cfg_name'])
         except AssertionError as ae:
             # put dialog box here for error
@@ -178,7 +177,6 @@ class LoadFromSaved(QWidget):
 
 
 class LoadNewSession(QWidget):
-
     switch = Signal(int)
 
     api_key = str()
@@ -285,7 +283,6 @@ class LoadNewSession(QWidget):
 
 
 class LoadMainWindow(QWidget):
-
     switch = Signal(int)
     data = list()
     client_objects = list()
@@ -358,8 +355,13 @@ class LoadMainWindow(QWidget):
         return self.table_model
 
     def run(self):
-        # todo: finish funciton
         airtable = SummitMail(self.base_id, self.api_key, self.cfg_name)
+        if not os.path.exists(os.path.join('/', self.files_source, '.txt')) \
+               | os.path.exists(os.path.join('/', self.files_source, '.html')):
+            # add dialog?
+            print("invalid file source")
+            return
+        return airtable.send_to_all(self.subject, self.files_source)
 
     def generate_output(self):
         if self.data:
@@ -390,6 +392,8 @@ class LoadMainWindow(QWidget):
         dialog.exec_()
 
     def before_send_dialog(self):
+        # todo: add checkbox for 'update table' clicked by default
+        # todo: add progress bar for sending test/all
         layout_grid = QGridLayout()
         label_subject = QLabel("Subject")
         label_files_source = QLabel("Files Source")
@@ -398,6 +402,8 @@ class LoadMainWindow(QWidget):
         edit_subject.editingFinished.connect(lambda: self.set_subject(edit_subject.text()))
         edit_files_source.editingFinished.connect(lambda: self.set_files_source(edit_files_source.text()))
         btn_edit = QPushButton("edit")
+        btn_test = QPushButton("send test")
+        btn_test.clicked.connect(self.send_test)
         dialog = QDialog(self)
         dialog.setGeometry(511, 380, 400, 150)
         btn_send = QDialogButtonBox(QDialogButtonBox.Apply)
@@ -408,6 +414,7 @@ class LoadMainWindow(QWidget):
         layout_grid.addWidget(label_files_source, 2, 0)
         layout_grid.addWidget(edit_files_source, 2, 1)
         layout_grid.addWidget(btn_edit, 3, 0)
+        layout_grid.addWidget(btn_test, 3, 1)
         layout_grid.addWidget(btn_back, 4, 0)
         layout_grid.addWidget(btn_send, 4, 1)
         dialog.setLayout(layout_grid)
@@ -420,6 +427,11 @@ class LoadMainWindow(QWidget):
     def set_files_source(self, text):
         print(f"files_source set, \'{text}\'")
         self.files_source = text
+
+    def send_test(self):
+        test = Email(self.subject, self.files_source, self.cfg_name)
+        return test.send_test_once()
+
 
 class TableModel(QAbstractTableModel):
 
