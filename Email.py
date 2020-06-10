@@ -12,7 +12,8 @@ class Email:
 
     def __init__(self, subject, files_source, cfg_name):
         self.subject = subject
-        self.files_source = f'{files_source}.txt'
+        self.files_source_txt = f'Inputs/{files_source}.txt'
+        self.files_source_html = f'Inputs/{files_source}.html'
 
         self.cfg_name = f'Cfg/{cfg_name}.ini'
         self.cfg = configparser.ConfigParser()
@@ -27,9 +28,9 @@ class Email:
         message = self.message
         message["Subject"] = self.subject
         message["From"] = self.sender_email
-        with open(self.files_source, "r") as t:
+        with open(self.files_source_txt, "r") as t:
             text = t.read()
-        with open(self.files_source, "r") as h:
+        with open(self.files_source_html, "r") as h:
             html = h.read()
         part1 = MIMEText(text, "plain")
         part2 = MIMEText(html, "html")

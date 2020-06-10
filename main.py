@@ -356,12 +356,13 @@ class LoadMainWindow(QWidget):
 
     def run(self):
         airtable = SummitMail(self.base_id, self.api_key, self.cfg_name)
-        if not os.path.exists(os.path.join('/', self.files_source, '.txt')) \
-               | os.path.exists(os.path.join('/', self.files_source, '.html')):
-            # add dialog?
+        clients = airtable.daily_25(update=True)
+        source = f'Inputs/{self.files_source}'
+        if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
+            # todo: add dialog
             print("invalid file source")
             return
-        return airtable.send_to_all(self.subject, self.files_source)
+        return airtable.send_to_all(self.subject, self.files_source, clients)
 
     def generate_output(self):
         if self.data:
@@ -409,6 +410,7 @@ class LoadMainWindow(QWidget):
         btn_send = QDialogButtonBox(QDialogButtonBox.Apply)
         btn_back = QDialogButtonBox(QDialogButtonBox.Cancel)
         btn_back.clicked.connect(dialog.accept)
+        btn_send.clicked.connect(self.run)
         layout_grid.addWidget(label_subject, 1, 0)
         layout_grid.addWidget(edit_subject, 1, 1)
         layout_grid.addWidget(label_files_source, 2, 0)
