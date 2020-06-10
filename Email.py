@@ -52,6 +52,7 @@ class Email:
         if write_output:
             output.write()
         proceed = input("Proceed  with emailing? y/n ... ")
+        # todo: add to gui, or delete
         if proceed == 'y':
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
                 server.login(self.sender_email, self.password)
