@@ -5,8 +5,8 @@ from SummitMail import SummitMail
 from Output import Output
 from Email import Email
 from PySide2.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
-    QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea, QDialog, \
-    QDialogButtonBox, QStatusBar
+    QGridLayout, QLineEdit, QComboBox, QTableView, QAbstractScrollArea, QDialog, \
+    QDialogButtonBox
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, Signal, QAbstractTableModel
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
@@ -178,7 +178,6 @@ class LoadFromSaved(QWidget):
 
 class LoadNewSession(QWidget):
     switch = Signal(int)
-
     api_key = str()
     base_id = str()
     sender_email = str()
@@ -233,7 +232,6 @@ class LoadNewSession(QWidget):
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch_window(0))
-        # todo: add dialog for when 'saved' is clicked
         btn_save.clicked.connect(self.save_cfg)
         btn_use_once.clicked.connect(lambda: self.switch_window(4))
         # add all layouts
@@ -274,9 +272,9 @@ class LoadNewSession(QWidget):
                            'test_email': self.test_email}
         with open(f'Cfg/{self.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
-        self.dialog_saved("Cfg saved!")
+        self.dialog_("Cfg saved!")
 
-    def dialog_saved(self, text):
+    def dialog_(self, text):
         layout = QVBoxLayout()
         dialog = QDialog(self)
         label_notice = QLabel(text)
@@ -358,7 +356,8 @@ class LoadMainWindow(QWidget):
         self.setGeometry(311, 186, 817, 600)
 
     def test_call(self):
-        connect = SummitMail(self.base_id, self.api_key)
+        connect = SummitMail(self.base_id, self.api_key, self.cfg_name)
+        
         return connect
 
     def collect_data(self):
@@ -483,6 +482,32 @@ class TableModel(QAbstractTableModel):
         return len(self._data[0])
 
 
+class Dialog(QDialog):
+
+    def __init__(self, message=""):
+        super().__init__()
+        self.message = message
+        layout = QVBoxLayout()
+        dialog = QDialog(self)
+        label_notice = QLabel(message)
+        btn_ok = QDialogButtonBox(QDialogButtonBox.Ok)
+        layout.addWidget(label_notice)
+        layout.addWidget(btn_ok)
+        dialog.setGeometry(511, 380, 200, 100)
+        dialog.setLayout(layout)
+        btn_ok.accepted.connect(dialog.accept)
+        dialog.exec_()
+
+
+class AnyException(Exception):
+    pass
+
+
+class InitError(AnyException):
+    def __init__(self, message):
+        self.message = message
+
+
 class Controller:
 
     def __init__(self):
@@ -507,10 +532,21 @@ class Controller:
             if num == 4:
                 creds = self.load_new.set_airtable_creds()
                 # todo: add more specific exceptions/error logic
-                self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
-                self.load_main.test_call()
-                self.welcome.close()
-                self.load_new.close()
+                try:
+                    main = LoadMainWindow(creds.base_id, creds.api_key, creds.cfg_name)
+                    main.test_call()
+                    self.welcome.close()
+                    self.load_new.close()
+                except KeyError as e:
+                    dialog = Dialog('error: check your API key or Base ID')
+                    return dialog
+                except FileNotFoundError as f:
+                    dialog = Dialog("File not found")
+                    return dialog
+                else:
+                    self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
+                    self.welcome.close()
+                    self.load_new.close()
 
     def show_welcome(self):
         self.welcome = Welcome()

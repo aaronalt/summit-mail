@@ -17,6 +17,9 @@ class SummitMail:
         self._contacts = Airtable(self.base_id, self.table_name, self.api_key)
         self.client_objects = []
 
+    def test(self):
+        return self._contacts
+
     def daily_25(self, update=False):
         contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=25)
         for i in contacts:
