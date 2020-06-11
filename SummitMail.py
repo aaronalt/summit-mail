@@ -18,7 +18,7 @@ class SummitMail:
         self.client_objects = []
 
     def daily_25(self, update=False):
-        contacts = self._contacts.get_all(formula="{status}=''", max_records=26)
+        contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=25)
         for i in contacts:
             try:
                 new_client = Client(i['fields']['name'].strip(),
@@ -31,7 +31,6 @@ class SummitMail:
                           'email': new_client.email, 'status': 'Contacted', 'contact date': self.date,
                           'contact method': 'Email',
                           'source': 'goodfirms.co', 'result': 'No response'}
-                # todo: move update to own function
                 if update:
                     self._contacts.update(record['id'], fields, typecast=True)
                 else:
@@ -50,4 +49,3 @@ class SummitMail:
         """
         email = Email(subject, files_source, self.cfg_name)
         email.send_external(clients)
-        # email = Email("App Development Support", "Inputs/contact_new_clients")
