@@ -51,20 +51,13 @@ class Email:
         output = Output(clients_list)
         if write_output:
             output.write()
-        proceed = input("Proceed  with emailing? y/n ... ")
-        # todo: add to gui, or delete
-        if proceed == 'y':
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
-                server.login(self.sender_email, self.password)
-                for each in clients_list:
-                    try:
-                        server.sendmail(
-                            self.sender_email, each.email, self.message.as_string()
-                        )
-                    except smtplib.SMTPRecipientsRefused as e:
-                        print(e)
-                        clients_list.pop(each)
-                        pass
-            print("\n")
-        else:
-            print("Aborting the mission...")
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
+            server.login(self.sender_email, self.password)
+            for each in clients_list:
+                try:
+                    server.sendmail(
+                        self.sender_email, each.email, self.message.as_string()
+                    )
+                except smtplib.SMTPRecipientsRefused as e:
+                    print(e)
+                    pass
