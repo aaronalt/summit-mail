@@ -6,7 +6,7 @@ from Output import Output
 from Email import Email
 from PySide2.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, \
     QGridLayout, QLineEdit, QComboBox, QProgressBar, QTableView, QHeaderView, QAbstractScrollArea, QDialog, \
-    QDialogButtonBox
+    QDialogButtonBox, QStatusBar
 from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, Signal, QAbstractTableModel
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
@@ -299,16 +299,20 @@ class LoadMainWindow(QWidget):
 
         layout = QVBoxLayout()
         # widget group 1: collect, run, progress bar, base name
-        btn_group_collect_run_progress = QHBoxLayout()
+        btn_group_collect_run_progress = QGridLayout()
+        btn_group_collect_run_progress.setSpacing(10)
+        btn_group_collect_run_progress.setContentsMargins(0, 25, 10, 20)
         btn_collect = QPushButton("Collect")
         btn_run = QPushButton("Run")
-        progress = QProgressBar()
-        progress.setOrientation(Qt.Horizontal)
+        """progress = QProgressBar()
+        progress.setOrientation(Qt.Horizontal)"""
+        spacer = QWidget()
         label_base = QLabel(self.base_name)
-        btn_group_collect_run_progress.addWidget(btn_collect)
-        btn_group_collect_run_progress.addWidget(btn_run)
-        btn_group_collect_run_progress.addWidget(progress)
-        btn_group_collect_run_progress.addWidget(label_base)
+        label_base.setAlignment(Qt.AlignRight)
+        btn_group_collect_run_progress.addWidget(btn_collect, 1, 0)
+        btn_group_collect_run_progress.addWidget(btn_run, 1, 1)
+        btn_group_collect_run_progress.addWidget(spacer, 1, 2)
+        btn_group_collect_run_progress.addWidget(label_base, 1, 4)
         btn_collect.clicked.connect(self.collect_data)
         btn_run.clicked.connect(self.before_send_dialog)
         # widget group 2: table
@@ -319,17 +323,18 @@ class LoadMainWindow(QWidget):
         self.table_view.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         table.addWidget(self.table_view)
         # widget group 3: test/edit html
-        btn_group_edit_test = QHBoxLayout()
+        btn_group_edit_test = QGridLayout()
         btn_generate_output = QPushButton("generate output")
-        btn_send_test = QPushButton("send test")
         label_view_edit = QLabel("view/edit:")
+        label_view_edit.setAlignment(Qt.AlignRight)
         btn_edit_html = QPushButton("html")
         btn_edit_txt = QPushButton("txt")
-        btn_group_edit_test.addWidget(btn_generate_output)
-        btn_group_edit_test.addWidget(btn_send_test)
-        btn_group_edit_test.addWidget(label_view_edit)
-        btn_group_edit_test.addWidget(btn_edit_html)
-        btn_group_edit_test.addWidget(btn_edit_txt)
+        btn_group_edit_test.addWidget(btn_generate_output, 1, 0)
+        btn_group_edit_test.addWidget(spacer, 1, 1)
+        btn_group_edit_test.addWidget(spacer, 1, 2)
+        btn_group_edit_test.addWidget(label_view_edit, 1, 3)
+        btn_group_edit_test.addWidget(btn_edit_html, 1, 4)
+        btn_group_edit_test.addWidget(btn_edit_txt, 1, 5)
         btn_generate_output.clicked.connect(self.generate_output)
         # add layouts
         layout.addLayout(btn_group_collect_run_progress)
