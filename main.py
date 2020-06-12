@@ -11,6 +11,9 @@ from PySide2.QtGui import Qt, QFont
 from PySide2.QtCore import Qt, Signal, QAbstractTableModel
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 
+# todo: check for duplicates before adding to list (airtable.search())
+# todo: close dialog after sending emails (update table model?)
+# todo: fix test_call before navigating to main window
 
 class Creds:
 
@@ -51,12 +54,12 @@ class Creds:
 
 
 class Welcome(QWidget):
+
     switch = Signal(int)
 
     def __init__(self):
         QWidget.__init__(self)
         self.setWindowTitle("SummitMailer")
-
         layout = QVBoxLayout()
         title = QLabel("SummitMail(er)")
         title.setAlignment(Qt.AlignCenter)
@@ -70,7 +73,6 @@ class Welcome(QWidget):
         font_subtitle = QFont()
         font_subtitle.setPointSize(12)
         subtitle.setFont(font_subtitle)
-
         font_subtitle.setPointSize(14)
         btn_saved_cfg = QPushButton("Start from saved cfg")
         btn_new_session = QPushButton("Start new session")
@@ -78,22 +80,18 @@ class Welcome(QWidget):
         btn_new_session.setFont(font_subtitle)
         btn_saved_cfg.setFixedSize(150, 80)
         btn_new_session.setFixedSize(150, 80)
-
         btn_group = QHBoxLayout()
         btn_group.setContentsMargins(25, 25, 25, 25)
         btn_group.addWidget(btn_saved_cfg)
         btn_group.addWidget(btn_new_session)
         btn_group.setAlignment(Qt.AlignCenter)
-
         btn_saved_cfg.clicked.connect(lambda: self.switch_window(1))
         btn_new_session.clicked.connect(lambda: self.switch_window(2))
-
         layout.addWidget(title)
         layout.addWidget(subtitle)
         layout.addLayout(btn_group)
         layout.setContentsMargins(25, 25, 25, 25)
         layout.addStretch(1)
-
         self.setLayout(layout)
         self.setGeometry(311, 186, 817, 330)
 
@@ -102,6 +100,7 @@ class Welcome(QWidget):
 
 
 class LoadFromSaved(QWidget):
+
     switch = Signal(int)
 
     # todo: add table name field from user input
@@ -113,7 +112,6 @@ class LoadFromSaved(QWidget):
         self.base_id = base_id
         self.api_key = api_key
         self.cfg_name = cfg_name
-
         layout = QVBoxLayout()
         # widget 1: prompt
         font = QFont()
@@ -171,12 +169,12 @@ class LoadFromSaved(QWidget):
         """ this function will send credentials to MainWindow class in order to init Airtable """
         print("loading main app...")
         # todo: input for 'table name' and ensuing functionality {integrate list of table names in cfg}
-
         creds = Creds(self.base_id, self.api_key, self.cfg_name)
         return creds
 
 
 class LoadNewSession(QWidget):
+
     switch = Signal(int)
     api_key = str()
     base_id = str()
@@ -294,6 +292,7 @@ class LoadNewSession(QWidget):
 
 
 class LoadMainWindow(QWidget):
+
     switch = Signal(int)
     data = list()
     client_objects = list()
@@ -307,7 +306,6 @@ class LoadMainWindow(QWidget):
         self.cfg_name = cfg_name
         self.base_name = base_name
         self.setWindowTitle("SummitMailer")
-
         layout = QVBoxLayout()
         # widget group 1: collect, run, progress bar, base name
         btn_group_collect_run_progress = QGridLayout()
@@ -377,8 +375,8 @@ class LoadMainWindow(QWidget):
         source = f'Inputs/{self.files_source}'
         if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
             # todo: add dialog
-            print("invalid file source")
-            return
+            dialog = Dialog("Invalid file source")
+            return dialog
         return airtable.send_to_all(self.subject, self.files_source, clients)
 
     def generate_output(self):
@@ -448,7 +446,14 @@ class LoadMainWindow(QWidget):
 
     def send_test(self):
         test = Email(self.subject, self.files_source, self.cfg_name)
-        return test.send_test_once()
+        test_message = test.build_message()
+        if test_message:
+            test.send_test_once()
+            dialog = Dialog("Test sent!")
+            return dialog
+        else:
+            dialog = Dialog("Invalid file source: not found")
+            return dialog
 
 
 class TableModel(QAbstractTableModel):
