@@ -69,3 +69,4 @@ class Email:
                 except smtplib.SMTPRecipientsRefused as e:
                     print(e)
                     pass
+        return "Finished!"

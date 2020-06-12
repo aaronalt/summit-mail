@@ -374,10 +374,12 @@ class LoadMainWindow(QWidget):
         clients = airtable.daily_25(update=True)
         source = f'Inputs/{self.files_source}'
         if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
-            # todo: add dialog
             dialog = Dialog("Invalid file source")
             return dialog
-        return airtable.send_to_all(self.subject, self.files_source, clients)
+        else:
+            send_emails = airtable.send_to_all(self.subject, self.files_source, clients)
+            dialog = Dialog(send_emails)
+            return dialog
 
     def generate_output(self):
         if self.data:
