@@ -270,19 +270,8 @@ class LoadNewSession(QWidget):
                            'test_email': self.test_email}
         with open(f'Cfg/{self.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
-        self.dialog_("Cfg saved!")
-
-    def dialog_(self, text):
-        layout = QVBoxLayout()
-        dialog = QDialog(self)
-        label_notice = QLabel(text)
-        btn_ok = QDialogButtonBox(QDialogButtonBox.Ok)
-        layout.addWidget(label_notice)
-        layout.addWidget(btn_ok)
-        dialog.setGeometry(511, 380, 200, 100)
-        dialog.setLayout(layout)
-        btn_ok.accepted.connect(dialog.accept)
-        dialog.exec_()
+        dialog = Dialog("Cfg saved!")
+        return dialog
 
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
