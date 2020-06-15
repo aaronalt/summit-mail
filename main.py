@@ -15,6 +15,7 @@ from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 # todo: close dialog after sending emails (update table model?)
 # todo: fix test_call before navigating to main window
 
+
 class Creds:
 
     def __init__(self, base_id, api_key, cfg_name):
