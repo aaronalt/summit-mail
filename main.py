@@ -75,7 +75,7 @@ class Welcome(QWidget):
         font_subtitle.setPointSize(12)
         subtitle.setFont(font_subtitle)
         font_subtitle.setPointSize(14)
-        btn_saved_cfg = QPushButton("Start from saved cfg")
+        btn_saved_cfg = QPushButton("Start from saved Cfg")
         btn_new_session = QPushButton("Start new session")
         btn_saved_cfg.setFont(font_subtitle)
         btn_new_session.setFont(font_subtitle)
@@ -109,7 +109,7 @@ class LoadFromSaved(QWidget):
 
     def __init__(self, base_id='', api_key='', cfg_name=''):
         QWidget.__init__(self)
-        self.setWindowTitle("Load from saved cfg")
+        self.setWindowTitle("Load from saved Cfg")
         self.base_id = base_id
         self.api_key = api_key
         self.cfg_name = cfg_name
@@ -169,7 +169,7 @@ class LoadFromSaved(QWidget):
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
         print("loading main app...")
-        # todo: input for 'table name' and ensuing functionality {integrate list of table names in cfg}
+        # todo: input for 'table name' and ensuing functionality {integrate list of table names in Cfg}
         creds = Creds(self.base_id, self.api_key, self.cfg_name)
         return creds
 
@@ -186,7 +186,7 @@ class LoadNewSession(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
-        self.setWindowTitle("Load new cfg")
+        self.setWindowTitle("Load new Cfg")
         layout = QVBoxLayout()
         # widget 1: edit lines
         base = QLabel("Base ID")
@@ -225,7 +225,7 @@ class LoadNewSession(QWidget):
         # widget 2: buttons
         btn_group = QHBoxLayout()
         btn_back = QPushButton("Back")
-        btn_save = QPushButton("Save cfg")
+        btn_save = QPushButton("Save Cfg")
         btn_use_once = QPushButton("Use once")
         btn_group.addWidget(btn_back)
         btn_group.addWidget(btn_save)
@@ -276,7 +276,7 @@ class LoadNewSession(QWidget):
 
     def set_airtable_creds(self):
         """ this function will send credentials to MainWindow class in order to init Airtable """
-        print("loading main app from new cfg...")
+        print("loading main app from new Cfg...")
         creds = Creds(self.base_id, self.api_key, self.cfg_name)
         return creds
 
