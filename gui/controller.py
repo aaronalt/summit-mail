@@ -30,10 +30,10 @@ class Controller:
                 self.show_load_main()
                 welcome.close()
             if num == 4:
-                creds = load_new.set_airtable_creds()
+                print(Creds.base_id)
                 # todo: add more specific exceptions/error logic
                 try:
-                    main = MainWindow(creds.base_id, creds.api_key, creds.cfg_name)
+                    main = MainWindow()
                     main.test_call()
                     welcome.close()
                     load_new.close()
@@ -44,7 +44,7 @@ class Controller:
                     dialog = Dialog("File not found")
                     return dialog
                 else:
-                    self.show_load_main(creds.base_id, creds.api_key, creds.cfg_name)
+                    self.show_load_main()
                     welcome.close()
                     load_new.close()
 

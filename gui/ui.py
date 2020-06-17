@@ -14,7 +14,8 @@ from Output import Output
 from SummitMail import SummitMail
 from gui.creds import Creds
 from gui.dialog import Dialog
-
+from actions.util import cfg_from_selection, cfg_api_key, cfg_base_id, cfg_name, cfg_sender_email, \
+    cfg_sender_email_pw, cfg_test_email, save_cfg
 
 class Listener(Thread):
 
@@ -95,7 +96,6 @@ class Welcome(QWidget):
 class FromSaved(QWidget):
 
     switch = Signal(int, object)
-
     # todo: add table name field from user input
     # table_name = ''
 
@@ -119,7 +119,7 @@ class FromSaved(QWidget):
         self.list_cfgs.setStyleSheet("color: white")
         for cfg in os.listdir('../Cfg'):
             self.list_cfgs.addItem(cfg)
-        self.list_cfgs.activated[str].connect(self.cfg_selection)
+        self.list_cfgs.activated[str].connect(cfg_from_selection)
         # widget 3: next/back buttons
         btn_group = QHBoxLayout()
         btn_group.setContentsMargins(5, 20, 5, 5)
@@ -140,39 +140,15 @@ class FromSaved(QWidget):
     def switch_window(self, num):
         self.switch.emit(num, Creds)
 
-    def cfg_selection(self, item):
-        """ this function will create an .ini file with env variables stored from user input"""
-        print(item)
-        cfg = configparser.ConfigParser()
-        cfg.read(os.path.join('../Cfg/', item))
-        try:
-            assert (cfg['ENV']['airtable_base_id'])
-            assert (cfg['ENV']['airtable_api_key'])
-            assert (cfg['ENV']['cfg_name'])
-        except AssertionError as ae:
-            # put dialog box here for error
-            print(f"\nAssertionError: No ENV variable {ae}\n")
-        except KeyError as ke:
-            print(f"\nKeyError: No ENV variable {ke}\n")
-        Creds.api_key = cfg['ENV']['airtable_api_key']
-        Creds.base_id = cfg['ENV']['airtable_base_id']
-        Creds.cfg_name = cfg['ENV']['cfg_name']
-
-    def set_airtable_creds(self):
-        # todo: input for 'table name' and ensuing functionality {integrate list of table names in Cfg}
-        creds = Creds(self.base_id, self.api_key, self.cfg_name)
-        return creds
-
 
 class FromNew(QWidget):
 
-    switch = Signal(int)
+    switch = Signal(int, object)
     api_key = str()
     base_id = str()
     sender_email = str()
     sender_email_pw = str()
     test_email = str()
-    cfg_name = str()
 
     def __init__(self):
         QWidget.__init__(self)
@@ -181,7 +157,7 @@ class FromNew(QWidget):
         # widget 1: edit lines
         base = QLabel("Base ID")
         apikey = QLabel("API Key")
-        cfg_name = QLabel("Name")
+        name = QLabel("Name")
         label_sender = QLabel("Sender Email")
         label_sender_pw = QLabel("Email Password")
         label_test_email = QLabel("Test Email")
@@ -191,16 +167,16 @@ class FromNew(QWidget):
         edit_sender_email = QLineEdit()
         edit_sender_email_pw = QLineEdit()
         edit_test_email = QLineEdit()
-        edit_base_id.editingFinished.connect(lambda: self.set_base(edit_base_id.text()))
-        edit_api_key.editingFinished.connect(lambda: self.set_key(edit_api_key.text()))
-        edit_cfg_name.editingFinished.connect(lambda: self.set_name(edit_cfg_name.text()))
-        edit_sender_email.editingFinished.connect(lambda: self.set_sender_email(edit_sender_email.text()))
-        edit_sender_email_pw.editingFinished.connect(lambda: self.set_sender_email_pw(edit_sender_email_pw.text()))
-        edit_test_email.editingFinished.connect(lambda: self.set_test_email(edit_test_email.text()))
+        edit_base_id.editingFinished.connect(lambda: cfg_base_id(edit_base_id.text()))
+        edit_api_key.editingFinished.connect(lambda: cfg_api_key(edit_api_key.text()))
+        edit_cfg_name.editingFinished.connect(lambda: cfg_name(edit_cfg_name.text()))
+        edit_sender_email.editingFinished.connect(lambda: cfg_sender_email(edit_sender_email.text()))
+        edit_sender_email_pw.editingFinished.connect(lambda: cfg_sender_email_pw(edit_sender_email_pw.text()))
+        edit_test_email.editingFinished.connect(lambda: cfg_test_email(edit_test_email.text()))
         # setup grid layout
         layout_grid = QGridLayout()
         layout_grid.setSpacing(10)
-        layout_grid.addWidget(cfg_name, 1, 0)
+        layout_grid.addWidget(name, 1, 0)
         layout_grid.addWidget(edit_cfg_name, 1, 1)
         layout_grid.addWidget(base, 2, 0)
         layout_grid.addWidget(edit_base_id, 2, 1)
@@ -221,7 +197,7 @@ class FromNew(QWidget):
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch_window(0))
-        btn_save.clicked.connect(self.save_cfg)
+        btn_save.clicked.connect(save_cfg)
         btn_use_once.clicked.connect(lambda: self.switch_window(4))
         # add all layouts
         layout.addLayout(layout_grid)
@@ -231,44 +207,7 @@ class FromNew(QWidget):
         self.setGeometry(311, 186, 400, 180)
 
     def switch_window(self, num):
-        self.switch.emit(num)
-
-    def set_base(self, text):
-        self.base_id = text
-
-    def set_key(self, text):
-        self.api_key = text
-
-    def set_name(self, text):
-        self.cfg_name = text
-
-    def set_sender_email(self, text):
-        self.sender_email = text
-
-    def set_sender_email_pw(self, text):
-        self.sender_email_pw = text
-
-    def set_test_email(self, text):
-        self.test_email = text
-
-    def save_cfg(self):
-        cfg = configparser.ConfigParser()
-        cfg['ENV'] = {'cfg_name': self.cfg_name,
-                      'airtable_api_key': self.api_key,
-                      'airtable_base_id': self.base_id}
-        cfg['settings'] = {'sender_email': self.sender_email,
-                           'sender_email_password': self.sender_email_pw,
-                           'test_email': self.test_email}
-        with open(f'../Cfg/{self.cfg_name}.ini', 'w') as configfile:
-            cfg.write(configfile)
-        dialog = Dialog("Cfg saved!")
-        return dialog
-
-    def set_airtable_creds(self):
-        """ this function will send credentials to MainWindow class in order to init Airtable """
-        print("loading main app from new Cfg...")
-        creds = Creds(self.base_id, self.api_key, self.cfg_name)
-        return creds
+        self.switch.emit(num, Creds)
 
 
 class MainWindow(QWidget):
