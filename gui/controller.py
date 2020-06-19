@@ -1,5 +1,5 @@
 from gui.dialog import Dialog
-from gui.ui import Welcome, FromNew, FromSaved, MainWindow
+from gui.ui import Welcome, FromNew, FromSaved, MainWindow, test_call
 from gui.creds import Creds
 
 
@@ -27,8 +27,12 @@ class Controller:
             if num == 2:
                 self.show_load_new()
             if num == 3:
+                try:
+                    print("testing cfg (controller)")
+                    test_call()
+                except:
+                    print("failed to load from controller")
                 self.show_load_main()
-                welcome.close()
             if num == 4:
                 print(Creds.base_id)
                 # todo: add more specific exceptions/error logic
@@ -41,8 +45,7 @@ class Controller:
                     dialog = Dialog('error: check your API key or Base ID')
                     return dialog
                 except FileNotFoundError as f:
-                    dialog = Dialog("File not found")
-                    return dialog
+                    return Dialog("File not found")
                 else:
                     self.show_load_main()
                     welcome.close()

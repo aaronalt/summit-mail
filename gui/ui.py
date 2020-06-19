@@ -12,10 +12,26 @@ from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 from Email import Email
 from Output import Output
 from SummitMail import SummitMail
+from gui import dialog_warning
 from gui.creds import Creds
 from gui.dialog import Dialog
 from actions.util import cfg_from_selection, cfg_api_key, cfg_base_id, cfg_name, cfg_sender_email, \
     cfg_sender_email_pw, cfg_test_email, save_cfg
+from actions.summitmail_to_airtable import SummitMail
+
+
+def test_call():
+    try:
+        print('running test_call (ui.py)')
+        sm = SummitMail()
+        sm.test()
+    except KeyError as ke:
+        title = "ENV warning"
+        msg = "There was a problem with your ENV variables."
+        dialog_warning(Dialog, title, msg, ke, show=True)
+    finally:
+        return "tested connection"
+
 
 class Listener(Thread):
 
@@ -271,10 +287,6 @@ class MainWindow(QWidget):
         # setup window
         self.setLayout(layout)
         self.setGeometry(311, 186, 817, 600)
-
-    def test_call(self):
-        connect = SummitMail(self.base_id, self.api_key, self.cfg_name)
-        return connect
 
     def collect_data(self):
         """ connect to AirTable; return data before sending """
