@@ -1,8 +1,49 @@
 from PySide2.QtCore import QThread, QObject, Signal, Qt
 from PySide2.QtWidgets import QApplication
 
+
 gui_thread = None
 qt_app = None
+
+
+def dialog_warning(parent, title, msg, msg_detail='', show=False):
+    from gui.dialog import Message
+    warning = Message(Message.warning_, title, msg, msg_detail, parent=parent)
+    if show:
+        return warning.exec_()
+    return warning
+
+
+def dialog_error(parent, title, msg, msg_detail='', show=False):
+    from gui.dialog import Message
+    error = Message(Message.error_, title, msg, msg_detail, parent=parent)
+    if show:
+        error.exec_()
+    return error
+
+
+def dialog_info(parent, title, msg, msg_detail='', show=False):
+    from gui.dialog import Message
+    info = Message(Message.info_, title, msg, msg_detail, parent=parent)
+    if show:
+        return info.exec_()
+    return info
+
+
+def dialog_question(parent, title, msg, msg_detail='', show=False):
+    from gui.dialog import Message
+    question = Message(Message.question_, title, msg, msg_detail, parent=parent)
+    if show:
+        return question.exec_()
+    return question
+
+
+def dialog_task(parent, title, msg, msg_detail='', show=False):
+    from gui.dialog import Message
+    task = Message(Message.task_, title, msg, msg_detail, parent=parent)
+    if show:
+        return task.exec_()
+    return task
 
 
 class Application(QApplication):

@@ -1,8 +1,8 @@
 from gui.creds import Creds
 import configparser
 import os
-
 from gui.dialog import Dialog
+
 
 cfg = configparser.ConfigParser()
 
@@ -40,8 +40,7 @@ def save_cfg():
                        'test_email': str(Creds.test_email)}
     with open(f'../Cfg/{Creds.cfg_name}.ini', 'w') as configfile:
         cfg.write(configfile)
-    dialog = Dialog("Cfg saved!")
-    return dialog
+    return Dialog("Cfg saved!")
 
 
 def cfg_from_selection(item):
