@@ -28,6 +28,7 @@ def test_call():
     except KeyError as ke:
         title = "ENV warning"
         msg = "There was a problem with your ENV variables."
+        print('dialog should be here')
         dialog_warning(Dialog, title, msg, ke, show=True)
     finally:
         return "tested connection"

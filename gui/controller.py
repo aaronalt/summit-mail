@@ -30,9 +30,9 @@ class Controller:
                 try:
                     print("testing cfg (controller)")
                     test_call()
+                    self.show_load_main()
                 except:
                     print("failed to load from controller")
-                self.show_load_main()
             if num == 4:
                 print(Creds.base_id)
                 # todo: add more specific exceptions/error logic
