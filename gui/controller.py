@@ -27,31 +27,25 @@ class Controller:
             if num == 2:
                 self.show_load_new()
             if num == 3:
-                print("testing cfg (controller)")
+                print("testing cfg (controller.loader.3)")
+                # test airtable connection
                 conn_tested = test_call()
-                test_result = conn_tested
                 if conn_tested:
-                    print("tested and ready (controller.py)", test_result)
                     self.show_load_main()
                 else:
                     print("0 returned from ui.py")
                     self.show_load_cfg()
             if num == 4:
                 # todo: add more specific exceptions/error logic
-                try:
-                    main = MainWindow()
-                    main.test_call()
-                    welcome.close()
-                    load_new.close()
-                except KeyError as e:
-                    dialog = Dialog('error: check your API key or Base ID')
-                    return dialog
-                except FileNotFoundError as f:
-                    return Dialog("File not found")
-                else:
+                print("testing cfg (controller.loader.4)")
+                # test airtable connection
+                conn_tested = test_call()
+                if conn_tested:
                     self.show_load_main()
                     welcome.close()
                     load_new.close()
+                else:
+                    self.show_load_new()
 
     def show_welcome(self):
         global welcome

@@ -1,4 +1,6 @@
 import datetime
+
+import requests
 from airtable import Airtable
 
 from Client import Client
@@ -18,14 +20,16 @@ class SummitMail:
 
     def test(self):
         from gui.dialog import Dialog
-        from gui import dialog_warning
-        title = "ENV warning"
-        msg = "There was a problem with your ENV variables."
+        from gui import dialog_error
         try:
-            dialog_warning(Dialog(), title, msg, traceback.format_exc(), show=True)
-        except TypeError as t:
-            print(traceback.format_exc())
-
+            self._contacts.get_all()
+        except requests.exceptions.HTTPError as e:
+            title = "ENV warning"
+            msg = str(e)
+            dialog_error(Dialog(), title, msg, traceback.format_exc(), show=True)
+            return 0
+        else:
+            return 1
 
     def daily_25(self, update=False):
         contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=25)

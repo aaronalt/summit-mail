@@ -1,6 +1,7 @@
 from gui.creds import Creds
 import configparser
 import os
+import sys
 from gui.dialog import Dialog
 
 
@@ -32,6 +33,8 @@ def cfg_test_email(value):
 
 
 def save_cfg():
+    from gui.dialog import Dialog
+    from gui import dialog_error, dialog_info, dialog_warning
     cfg['ENV'] = {'cfg_name': str(Creds.cfg_name),
                   'airtable_api_key': str(Creds.api_key),
                   'airtable_base_id': str(Creds.base_id)}
@@ -40,7 +43,16 @@ def save_cfg():
                        'test_email': str(Creds.test_email)}
     with open(f'../Cfg/{Creds.cfg_name}.ini', 'w') as configfile:
         cfg.write(configfile)
-    return Dialog("Cfg saved!")
+
+    if not cfg['ENV']['cfg_name']:
+        return dialog_warning(Dialog(), "Warning", "cfg name cannot be empty", show=True)
+    if not cfg['ENV']['airtable_api_key']:
+        return dialog_warning(Dialog(), "Warning", "cfg name cannot be empty", show=True)
+    else:
+        print(sys.getsizeof(Creds), " = size of obj")
+        return dialog_info(Dialog(), "Saved", "Cfg saved successfully!", f'Save location:\n'
+                                                                         f'{os.path.abspath(str(Creds.cfg_name))}',
+                           show=True)
 
 
 def cfg_from_selection(item):

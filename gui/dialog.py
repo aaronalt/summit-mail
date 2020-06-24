@@ -46,8 +46,8 @@ class Message(QDialog):
         self.setWindowTitle(title)
         self.msg.setText(msg)
         self.msg_detail.setPlainText(msg_detail)
-        self.msg_detail.setVisible(True)
-        # todo: add show/hide details toggle, resize dialog
+        # todo: add show/hide details toggle
+        # todo: resize dialog dynamically
         # self.msg_detail_toggle = self.btn_box.addButton()
 
         self.is_question = type_of == self.question_
@@ -61,6 +61,12 @@ class Message(QDialog):
         self.is_error = type_of == self.error_
         if self.is_error:
             self.btn_box.rejected.connect(self.reject)
+
+        self.is_warning = type_of == self.warning_
+        if self.is_warning:
+            self.grid.removeWidget(self.msg_detail)
+            self.msg_detail.deleteLater()
+            self.msg_detail = None
 
         """if not msg_detail:
             self.msg_detail_toggle.setVisible(False)"""
