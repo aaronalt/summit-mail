@@ -1,7 +1,7 @@
 from gui.dialog import Dialog
 from gui.ui import Welcome, FromNew, FromSaved, MainWindow, test_call
 from gui.creds import Creds
-
+# todo: change logic from signals returning int, to return fn switch(parent, next)
 
 welcome = None
 load_cfg = None
@@ -27,14 +27,12 @@ class Controller:
             if num == 2:
                 self.show_load_new()
             if num == 3:
-                try:
                     print("testing cfg (controller)")
-                    test_call()
-                    self.show_load_main()
-                except:
-                    print("failed to load from controller")
+                    if test_call():
+                        self.show_load_main()
+                    else:
+                        pass
             if num == 4:
-                print(Creds.base_id)
                 # todo: add more specific exceptions/error logic
                 try:
                     main = MainWindow()
