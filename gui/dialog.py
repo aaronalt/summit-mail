@@ -28,7 +28,7 @@ class Message(QDialog):
         self.msg = msg = QLabel(self)
         msg.setWordWrap(True)
         msg.setObjectName("msg")
-        grid.addWidget(msg, 0, 1, 1, 1)
+        grid.addWidget(msg, 0, 0, 1, 2)
         self.msg_detail = msg_detail = QPlainTextEdit(self)
         msg_detail.setReadOnly(True)
         msg_detail.setObjectName("msgDetail")
@@ -48,7 +48,6 @@ class Message(QDialog):
         self.msg_detail.setPlainText(msg_detail)
         self.msg_detail.setVisible(True)
         # todo: add show/hide details toggle, resize dialog
-        # todo: fix dialog format (msg move to left grid)
         # self.msg_detail_toggle = self.btn_box.addButton()
 
         self.is_question = type_of == self.question_
