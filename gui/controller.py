@@ -1,7 +1,6 @@
 from gui.dialog import Dialog
 from gui.ui import Welcome, FromNew, FromSaved, MainWindow, test_call
 from gui.creds import Creds
-# todo: change logic from signals returning int, to return fn switch(parent, next)
 
 welcome = None
 load_cfg = None
