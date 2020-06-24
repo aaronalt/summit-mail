@@ -14,8 +14,13 @@ class Controller:
     def __init__(self):
         pass
 
-    def loader(self, num):
-        try:
+    def loader(self, parent, child):
+        print(type(parent).__name__, next)
+        self.open_window(child)
+        self.close_window(parent)
+
+
+        """try:
             load_cfg.close()
         except AttributeError:
             pass
@@ -45,7 +50,25 @@ class Controller:
                     welcome.close()
                     load_new.close()
                 else:
-                    self.show_load_new()
+                    self.show_load_new()"""
+
+    def open_window(self, child):
+        if child == 'welcome':
+            self.show_welcome()
+        if child == 'load_cfg':
+            self.show_load_cfg()
+        if child == 'load_new':
+            self.show_load_new()
+        if child == 'load_main':
+            self.show_load_main()
+
+    def close_window(self, parent):
+        if type(parent).__name__ == 'Welcome':
+            welcome.close()
+        if type(parent).__name__ == 'FromSaved':
+            load_cfg.close()
+        if type(parent).__name__ == 'FromNew':
+            load_new.close()
 
     def show_welcome(self):
         global welcome

@@ -9,10 +9,11 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLa
     QTableView, QAbstractScrollArea, QDialog, QDialogButtonBox
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 
+import gui
 from actions.emailer import Email
 from actions.output import Output
 from actions.summitmail_to_airtable import SummitMail
-from gui import dialog_info, dialog_error, dialog_warning
+from gui import dialog_info, dialog_error, dialog_warning, Dispatcher, controller
 from gui.creds import Creds
 from gui.dialog import Dialog
 from gui.models import TableModel
@@ -60,7 +61,7 @@ class Listener(Thread):
 
 class Welcome(QWidget):
 
-    switch = Signal(int)
+    switch = Signal(object, str)
 
     def __init__(self):
         QWidget.__init__(self)
@@ -90,8 +91,8 @@ class Welcome(QWidget):
         btn_group.addWidget(btn_saved_cfg)
         btn_group.addWidget(btn_new_session)
         btn_group.setAlignment(Qt.AlignCenter)
-        btn_saved_cfg.clicked.connect(lambda: self.switch_window(1))
-        btn_new_session.clicked.connect(lambda: self.switch_window(2))
+        btn_saved_cfg.clicked.connect(lambda: self.switch.emit(self, 'load_cfg'))
+        btn_new_session.clicked.connect(lambda: self.switch.emit(self, 'load_new'))
         layout.addWidget(title)
         layout.addWidget(subtitle)
         layout.addLayout(btn_group)
@@ -100,13 +101,10 @@ class Welcome(QWidget):
         self.setLayout(layout)
         self.setGeometry(311, 186, 817, 330)
 
-    def switch_window(self, num):
-        self.switch.emit(num)
-
 
 class FromSaved(QWidget):
 
-    switch = Signal(int, object)
+    switch = Signal(object, str)
     # todo: add table name field from user input
     # table_name = ''
 
@@ -138,8 +136,8 @@ class FromSaved(QWidget):
         go = QPushButton("Go")
         btn_group.addWidget(back)
         btn_group.addWidget(go)
-        back.clicked.connect(lambda: self.switch_window(0))
-        go.clicked.connect(lambda: self.switch_window(3))
+        back.clicked.connect(lambda: self.switch.emit(self, 'welcome'))
+        go.clicked.connect(lambda: self.switch.emit(self, 'load_main'))
         # add widgets
         layout.addWidget(prompt)
         layout.addWidget(self.list_cfgs)
@@ -148,13 +146,10 @@ class FromSaved(QWidget):
         self.setLayout(layout)
         self.setGeometry(311, 186, 400, 180)
 
-    def switch_window(self, num):
-        self.switch.emit(num, Creds)
-
 
 class FromNew(QWidget):
 
-    switch = Signal(int, object)
+    switch = Signal(object, str)
     api_key = str()
     base_id = str()
     sender_email = str()
@@ -214,18 +209,15 @@ class FromNew(QWidget):
         btn_group.addWidget(btn_back)
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
-        btn_back.clicked.connect(lambda: self.switch_window(0))
+        btn_back.clicked.connect(lambda: self.switch.emit(self, 'welcome'))
         btn_save.clicked.connect(save_cfg)
-        btn_use_once.clicked.connect(lambda: self.switch_window(4))
+        btn_use_once.clicked.connect(lambda: self.switch.emit(self, 'load_main'))
         # add all layouts
         layout.addLayout(layout_grid)
         layout.addLayout(btn_group)
         # setup window
         self.setLayout(layout)
         self.setGeometry(311, 186, 400, 180)
-
-    def switch_window(self, num):
-        self.switch.emit(num, Creds)
 
 
 class MainWindow(QWidget):

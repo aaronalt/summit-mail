@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 import smtplib
 import ssl
 from actions.output import Output
+from actions.util import cfg_name
 from gui.creds import Creds
 
 
@@ -18,12 +19,12 @@ class Email:
         self.files_source_txt = f'../Inputs/{files_source}.txt'
         self.files_source_html = f'../Inputs/{files_source}.html'
 
-        self.cfg_name = str(Creds.cfg_name)
+        self.cfg_name = getattr(Creds, 'cfg_name')
         self.cfg = configparser.ConfigParser()
         self.cfg.read(self.cfg_name)
-        self.sender_email = str(Creds.sender_email)
-        self.password = str(Creds.sender_email_pw)
-        self.test_email = str(Creds.test_email)
+        self.sender_email = getattr(Creds, 'sender_email')
+        self.password = getattr(Creds, 'sender_email_pw')
+        self.test_email = getattr(Creds, 'test_email')
 
     def build_message(self):
         message = self.message

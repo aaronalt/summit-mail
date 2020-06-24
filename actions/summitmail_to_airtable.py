@@ -27,7 +27,7 @@ class SummitMail:
         except requests.exceptions.HTTPError as e:
             title = "ENV warning"
             msg = str(e)
-            dialog_error(Dialog(), title, msg, traceback.format_exc(), show=True)
+            dialog_error(Dialog(), title, msg, traceback.format_exc())
             return 0
         else:
             return 1

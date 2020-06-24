@@ -42,7 +42,7 @@ class Creds:
 
     @property
     def sender_email_pw(self):
-        return self._sender_email_pw
+        return self._sender_email_pw.astype(str)
 
     @sender_email_pw.setter
     def sender_email_pw(self, value):
