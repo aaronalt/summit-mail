@@ -19,6 +19,7 @@ class SummitMail:
         self.client_objects = []
 
     def test(self):
+        # todo: remove dialog from actions into controller/ui
         from gui.dialog import Dialog
         from gui import dialog_error
         try:

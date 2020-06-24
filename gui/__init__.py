@@ -6,7 +6,7 @@ gui_thread = None
 qt_app = None
 
 
-def dialog_warning(parent, title, msg, msg_detail='', show=False):
+def dialog_warning(parent, title, msg, msg_detail='', show=True):
     from gui.dialog import Message
     warning = Message(Message.warning_, title, msg, msg_detail, parent=parent)
     if show:
@@ -14,7 +14,7 @@ def dialog_warning(parent, title, msg, msg_detail='', show=False):
     return warning
 
 
-def dialog_error(parent, title, msg, msg_detail='', show=False):
+def dialog_error(parent, title, msg, msg_detail='', show=True):
     from gui.dialog import Message
     error = Message(Message.error_, title, msg, msg_detail, parent=parent)
     if show:
@@ -22,7 +22,7 @@ def dialog_error(parent, title, msg, msg_detail='', show=False):
     return error
 
 
-def dialog_info(parent, title, msg, msg_detail='', show=False):
+def dialog_info(parent, title, msg, msg_detail='', show=True):
     from gui.dialog import Message
     info = Message(Message.info_, title, msg, msg_detail, parent=parent)
     if show:
@@ -30,7 +30,7 @@ def dialog_info(parent, title, msg, msg_detail='', show=False):
     return info
 
 
-def dialog_question(parent, title, msg, msg_detail='', show=False):
+def dialog_question(parent, title, msg, msg_detail='', show=True):
     from gui.dialog import Message
     question = Message(Message.question_, title, msg, msg_detail, parent=parent)
     if show:
@@ -38,7 +38,7 @@ def dialog_question(parent, title, msg, msg_detail='', show=False):
     return question
 
 
-def dialog_task(parent, title, msg, msg_detail='', show=False):
+def dialog_task(parent, title, msg, msg_detail='', show=True):
     from gui.dialog import Message
     task = Message(Message.task_, title, msg, msg_detail, parent=parent)
     if show:

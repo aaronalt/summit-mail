@@ -9,12 +9,13 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLa
     QTableView, QAbstractScrollArea, QDialog, QDialogButtonBox
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 
-from Email import Email
-from Output import Output
-from SummitMail import SummitMail
-from gui import dialog_warning
+from actions.emailer import Email
+from actions.output import Output
+from actions.summitmail_to_airtable import SummitMail
+from gui import dialog_info, dialog_error, dialog_warning
 from gui.creds import Creds
 from gui.dialog import Dialog
+from gui.models import TableModel
 from actions.util import cfg_from_selection, cfg_api_key, cfg_base_id, cfg_name, cfg_sender_email, \
     cfg_sender_email_pw, cfg_test_email, save_cfg
 from actions.summitmail_to_airtable import SummitMail
@@ -171,6 +172,7 @@ class FromNew(QWidget):
         label_sender = QLabel("Sender Email")
         label_sender_pw = QLabel("Email Password")
         label_test_email = QLabel("Test Email")
+        # todo: validation logic for empty fields
         edit_base_id = QLineEdit()
         edit_base_id.setPlaceholderText("Airtable Base ID, e.g. 'appXXXXXXX'")
         edit_api_key = QLineEdit()
@@ -240,6 +242,7 @@ class MainWindow(QWidget):
         self.api_key = Creds.api_key
         self.cfg_name = Creds.cfg_name
         self.base_name = base_name
+        self.airtable = SummitMail()
         self.setWindowTitle("SummitMailer")
         layout = QVBoxLayout()
         # widget group 1: collect, run, progress bar, base name
@@ -290,8 +293,7 @@ class MainWindow(QWidget):
 
     def collect_data(self):
         """ connect to AirTable; return data before sending """
-        airtable = SummitMail(self.base_id, self.api_key, self.cfg_name)
-        self.client_objects = airtable.daily_25()
+        self.client_objects = self.airtable.daily_25()
         for c in self.client_objects:
             client = [c.name, c.country, c.website, c.email]
             self.data.append(client)
@@ -300,47 +302,27 @@ class MainWindow(QWidget):
         return self.table_model
 
     def run(self):
-        airtable = SummitMail(self.base_id, self.api_key, self.cfg_name)
-        clients = airtable.daily_25(update=True)
+        clients = self.airtable.daily_25(update=True)
         source = f'Inputs/{self.files_source}'
         if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
-            dialog = Dialog("Invalid file source")
-            return dialog
+            return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
         else:
-            send_emails = airtable.send_to_all(self.subject, self.files_source, clients)
-            dialog = Dialog(send_emails)
-            return dialog
+            self.airtable.send_to_all(self.subject, self.files_source, clients)
+            # todo: add output file to dialog as 'msg_detail'
+            return dialog_info(Dialog(), "Email sent", "Emails sent successfully!")
 
     def generate_output(self):
         if self.data:
             output = Output(self.client_objects)
             path, filename = output.write()
             output_filename = os.path.join(path, filename)
-            self.output_dialog(output_filename)
+            # todo: load generated output file instead of path
+            dialog_info(Dialog(), "Output", "Output generated!", f"Location:\n{os.path.abspath(output_filename)}")
         else:
-            self.output_dialog("")
-
-    def output_dialog(self, path_or_nodata):
-        # todo: load generated output file instead of path
-        layout = QVBoxLayout()
-        dialog = QDialog(self)
-        label_notice = QLabel()
-        if path_or_nodata:
-            label_notice = QLabel(f"Output generated at:\n{path_or_nodata}", dialog)
-        else:
-            label_notice = QLabel("No data to write", dialog)
-        label_notice.setMargin(25)
-        btn_ok = QDialogButtonBox(QDialogButtonBox.Ok)
-        layout.addWidget(label_notice)
-        layout.addWidget(btn_ok)
-        dialog.setGeometry(511, 380, 200, 100)
-        dialog.setLayout(layout)
-        btn_ok.accepted.connect(dialog.accept)
-        dialog.exec_()
+            dialog_info(Dialog(), "Output", "Nothing to output.")
 
     def before_send_dialog(self):
         # todo: add checkbox for 'update table' clicked by default
-        # todo: add progress bar for sending test/all
         layout_grid = QGridLayout()
         label_subject = QLabel("Subject")
         label_files_source = QLabel("Files Source")
@@ -377,12 +359,13 @@ class MainWindow(QWidget):
         self.files_source = text
 
     def send_test(self):
-        test = Email(self.subject, self.files_source, self.cfg_name)
+        test = Email(self.subject, self.files_source)
         test_message = test.build_message()
         if test_message:
-            test.send_test_once()
-            dialog = Dialog("Test sent!")
-            return dialog
+            t = test.send_test_once()
+            if t:
+                return dialog_error(Dialog(), "Test error", "Error sending test", t)
+            else:
+                return dialog_info(Dialog(), "Success", f"Test sent to {str(Creds.test_email)}!")
         else:
-            dialog = Dialog("Invalid file source: not found")
-            return dialog
+            return dialog_warning(Dialog(), "Warning", "File source not found...")
