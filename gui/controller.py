@@ -15,52 +15,22 @@ class Controller:
         pass
 
     def loader(self, parent, child):
-        print(type(parent).__name__, next)
-        self.open_window(child)
-        self.close_window(parent)
-
-
-        """try:
-            load_cfg.close()
-        except AttributeError:
-            pass
-        finally:
-            if num == 0:
-                load_new.close()
-            if num == 1:
-                self.show_load_cfg()
-            if num == 2:
-                self.show_load_new()
-            if num == 3:
-                print("testing cfg (controller.loader.3)")
-                # test airtable connection
-                conn_tested = test_call()
-                if conn_tested:
-                    self.show_load_main()
-                else:
-                    print("0 returned from ui.py")
-                    self.show_load_cfg()
-            if num == 4:
-                # todo: add more specific exceptions/error logic
-                print("testing cfg (controller.loader.4)")
-                # test airtable connection
-                conn_tested = test_call()
-                if conn_tested:
-                    self.show_load_main()
-                    welcome.close()
-                    load_new.close()
-                else:
-                    self.show_load_new()"""
-
-    def open_window(self, child):
         if child == 'welcome':
             self.show_welcome()
+            self.close_window(parent)
         if child == 'load_cfg':
             self.show_load_cfg()
+            self.close_window(parent)
         if child == 'load_new':
             self.show_load_new()
+            self.close_window(parent)
         if child == 'load_main':
-            self.show_load_main()
+            conn_success = test_call()
+            if conn_success:
+                self.show_load_main()
+                self.close_window(parent)
+            else:
+                print('error from trying to load main')
 
     def close_window(self, parent):
         if type(parent).__name__ == 'Welcome':
