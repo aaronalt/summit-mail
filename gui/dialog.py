@@ -58,5 +58,9 @@ class Message(QDialog):
         else:
             self.btn_box.button(self.btn_box.Ok).setDefault(True)
 
+        self.is_error = type_of == self.error_
+        if self.is_error:
+            self.btn_box.rejected.connect(self.reject)
+
         """if not msg_detail:
             self.msg_detail_toggle.setVisible(False)"""

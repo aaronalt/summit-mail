@@ -21,17 +21,10 @@ from actions.summitmail_to_airtable import SummitMail
 
 
 def test_call():
-    try:
-        print('running test_call (ui.py)')
-        sm = SummitMail()
-        sm.test()
-    except KeyError as ke:
-        title = "ENV warning"
-        msg = "There was a problem with your ENV variables."
-        print('dialog should be here')
-        dialog_warning(Dialog, title, msg, ke, show=True)
-    finally:
-        return "tested connection"
+    print('running test_call (ui.py)')
+    sm = SummitMail()
+    result = sm.test()
+    return 1 if result else 0
 
 
 class Listener(Thread):
