@@ -19,12 +19,14 @@ class Email:
         self.files_source_txt = f'../Inputs/{files_source}.txt'
         self.files_source_html = f'../Inputs/{files_source}.html'
 
+        # todo: use cryptography lib to store/read config files
         self.cfg_name = getattr(Creds, 'cfg_name')
         self.cfg = configparser.ConfigParser()
         self.cfg.read(self.cfg_name)
-        self.sender_email = getattr(Creds, 'sender_email')
-        self.password = getattr(Creds, 'sender_email_pw')
-        self.test_email = getattr(Creds, 'test_email')
+        self.sender_email = self.cfg['settings']['sender_email']
+        self.password = self.cfg['settings']['sender_email_password']
+        self.test_email = self.cfg['settings']['test_email']
+        print(self.cfg.sections())
 
     def build_message(self):
         message = self.message
