@@ -5,7 +5,6 @@ from email.mime.text import MIMEText
 import smtplib
 import ssl
 from actions.output import Output
-from actions.util import cfg_name
 from gui.creds import Creds
 
 
@@ -16,11 +15,11 @@ class Email:
         self.message = MIMEMultipart("alternative")
 
         self.subject = subject
-        self.files_source_txt = f'../Inputs/{files_source}.txt'
-        self.files_source_html = f'../Inputs/{files_source}.html'
+        self.files_source_txt = f'../docs/{files_source}.txt'
+        self.files_source_html = f'../docs/{files_source}.html'
 
         # todo: use cryptography lib to store/read config files
-        self.cfg_name = getattr(Creds, 'cfg_name')
+        self.cfg_name = f"../config/{Creds.cfg_name}.ini"
         self.cfg = configparser.ConfigParser()
         self.cfg.read(self.cfg_name)
         self.sender_email = self.cfg['settings']['sender_email']
@@ -74,5 +73,6 @@ class Email:
                     )
                 except smtplib.SMTPRecipientsRefused as e:
                     print(e)
+                    # todo: dialog
                     pass
         return "Finished!"

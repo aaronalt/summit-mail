@@ -126,7 +126,7 @@ class FromSaved(QWidget):
         self.list_cfgs = QComboBox()
         self.list_cfgs.setContentsMargins(5, 5, 5, 5)
         self.list_cfgs.setStyleSheet("color: white")
-        for cfg in os.listdir('../Cfg'):
+        for cfg in os.listdir('../config'):
             self.list_cfgs.addItem(cfg)
         self.list_cfgs.activated[str].connect(cfg_from_selection)
         # widget 3: next/back buttons

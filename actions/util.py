@@ -34,14 +34,14 @@ def cfg_test_email(value):
 
 def save_cfg():
     from gui.dialog import Dialog
-    from gui import dialog_error, dialog_info, dialog_warning
+    from gui import dialog_info, dialog_warning
     cfg['ENV'] = {'cfg_name': str(Creds.cfg_name),
                   'airtable_api_key': str(Creds.api_key),
                   'airtable_base_id': str(Creds.base_id)}
     cfg['settings'] = {'sender_email': str(Creds.sender_email),
                        'sender_email_password': str(Creds.sender_email_pw),
                        'test_email': str(Creds.test_email)}
-    with open(f'../Cfg/{Creds.cfg_name}.ini', 'w') as configfile:
+    with open(f'../config/{Creds.cfg_name}.ini', 'w') as configfile:
         cfg.write(configfile)
 
     if not cfg['ENV']['cfg_name']:
@@ -58,7 +58,7 @@ def save_cfg():
 def cfg_from_selection(item):
     """ this function will create an .ini file with env variables stored from user input"""
     print(f'cfg: \'{item}\'')
-    cfg.read(os.path.join('../Cfg/', item))
+    cfg.read(os.path.join('../config/', item))
     Creds.api_key = cfg['ENV']['airtable_api_key']
     Creds.base_id = cfg['ENV']['airtable_base_id']
     Creds.cfg_name = cfg['ENV']['cfg_name']
