@@ -4,7 +4,7 @@ import requests
 from airtable import Airtable
 
 from Client import Client
-from Email import Email
+from actions.emailer import Email
 from gui.creds import Creds
 import traceback
 
@@ -64,5 +64,5 @@ class SummitMail:
         subject = email subject
         files_source = path/to/email.html & path/to/email.txt
         """
-        email = Email(subject, files_source, Creds.cfg_name)
+        email = Email(subject, files_source)
         email.send_external(clients)
