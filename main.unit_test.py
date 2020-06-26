@@ -39,16 +39,16 @@ class EmailTest(unittest.TestCase):
     def test_update_email_list(self):
         self.test_filter_emails()
         self.assertTrue(self.email.append_list)
-        with open('Outputs/Tests/email_list_test.txt', 'r') as email_list:
+        with open('docs/test_docs/email_list_test.txt', 'r') as email_list:
             line = email_list.readlines()
             liszt = [i.strip() for i in line]
             self.assertFalse(self.email.append_list in liszt)
         self.email.update_email_list("Outputs/Tests/email_list_test")
-        with open('Outputs/Tests/email_list_test.txt', 'r') as email_list:
+        with open('docs/test_docs/email_list_test.txt', 'r') as email_list:
             line = email_list.readlines()[:-1]
             print(line)
-        os.remove('Outputs/Tests/email_list_test.txt')
-        with open('Outputs/Tests/email_list_test.txt', 'w') as new_email_list:
+        os.remove('docs/test_docs/email_list_test.txt')
+        with open('docs/test_docs/email_list_test.txt', 'w') as new_email_list:
             for i in line:
                 new_email_list.write(i)
 
@@ -56,7 +56,7 @@ class EmailTest(unittest.TestCase):
         self.assertTrue(os.path.exists('Inputs/Tests/test.csv'))
         self.assertTrue(os.path.exists('Inputs/Tests/test.txt'))
         self.assertTrue(os.path.exists('Inputs/Tests/test.html'))
-        self.assertTrue(os.path.exists('Outputs/Tests/email_list_test.txt'))
+        self.assertTrue(os.path.exists('docs/test_docs/email_list_test.txt'))
 
     def test_write_output(self):
         month = self.today.month
