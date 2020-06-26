@@ -1,7 +1,12 @@
 import datetime
+import configparser
+import requests
 from airtable import Airtable
+
 from Client import Client
-from Email import Email
+from actions.emailer import Email
+from gui.creds import Creds
+import traceback
 
 
 class SummitMail:
@@ -9,16 +14,22 @@ class SummitMail:
     d = datetime.datetime.now()
     date = f'{d.day}/{d.month}/{d.year}'
 
-    def __init__(self, base_id, api_key, cfg_name, table_name="New Contacts"):
-        self.base_id = base_id
-        self.api_key = api_key
-        self.cfg_name = cfg_name
-        self.table_name = table_name
-        self._contacts = Airtable(self.base_id, self.table_name, self.api_key)
+    def __init__(self, table_name="New Contacts"):
+        self._contacts = Airtable(Creds.base_id, table_name, Creds.api_key)
         self.client_objects = []
 
     def test(self):
-        return self._contacts
+        # todo: remove dialog from actions into controller/ui
+        from gui.dialog import Dialog
+        from gui import dialog_error
+        try:
+            self._contacts.get_all()
+        except requests.exceptions.HTTPError as e:
+            msg = str(e)
+            dialog_error(Dialog(), "ENV warning", msg, traceback.format_exc())
+            return 0
+        else:
+            return 1
 
     def daily_25(self, update=False):
         contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=25)
@@ -39,16 +50,19 @@ class SummitMail:
                 else:
                     continue
             except KeyError as error:
+                # todo: add dialog
                 print(error)
                 continue
         print("done collecting data")
+        # todo: add dialog
         return self.client_objects
 
     def send_to_all(self, subject, files_source, clients):
+        # todo: move to utils
         """
         send email to all clients in the list
         subject = email subject
         files_source = path/to/email.html & path/to/email.txt
         """
-        email = Email(subject, files_source, self.cfg_name)
+        email = Email(subject, files_source)
         email.send_external(clients)

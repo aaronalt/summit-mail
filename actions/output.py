@@ -1,11 +1,11 @@
 import os
 import datetime
 from ClientFilter import ClientFilter
-
+# todo: add dialogs
 
 class Output:
 
-    def __init__(self, clients_contacted, path="Outputs/Contact_logs/", output_filename="output"):
+    def __init__(self, clients_contacted, path="../docs/outputs/", output_filename="output"):
         self.path = path
         self.output_filename = output_filename
         self.clients_contacted = clients_contacted
