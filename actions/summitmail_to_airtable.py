@@ -1,5 +1,5 @@
 import datetime
-
+import configparser
 import requests
 from airtable import Airtable
 
@@ -15,7 +15,7 @@ class SummitMail:
     date = f'{d.day}/{d.month}/{d.year}'
 
     def __init__(self, table_name="New Contacts"):
-        self._contacts = Airtable(str(Creds.base_id), table_name, str(Creds.api_key))
+        self._contacts = Airtable(Creds.base_id, table_name, Creds.api_key)
         self.client_objects = []
 
     def test(self):
@@ -50,12 +50,15 @@ class SummitMail:
                 else:
                     continue
             except KeyError as error:
+                # todo: add dialog
                 print(error)
                 continue
         print("done collecting data")
+        # todo: add dialog
         return self.client_objects
 
     def send_to_all(self, subject, files_source, clients):
+        # todo: move to utils
         """
         send email to all clients in the list
         subject = email subject
