@@ -9,16 +9,10 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLa
     QTableView, QAbstractScrollArea, QDialog, QDialogButtonBox
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 
-import gui
-from actions.emailer import Email
-from actions.output import Output
-from actions.summitmail_to_airtable import SummitMail
-from gui import dialog_info, dialog_error, dialog_warning, Dispatcher, controller
 from gui.creds import Creds
-from gui.dialog import Dialog
 from gui.models import TableModel
 from actions.util import cfg_from_selection, cfg_api_key, cfg_base_id, cfg_name, cfg_sender_email, \
-    cfg_sender_email_pw, cfg_test_email, save_cfg
+    cfg_sender_email_pw, cfg_test_email, save_cfg, send_test, generate_output, run
 from actions.summitmail_to_airtable import SummitMail
 
 
@@ -84,8 +78,8 @@ class Welcome(QWidget):
         btn_new_session = QPushButton("Start new session")
         btn_saved_cfg.setFont(font_subtitle)
         btn_new_session.setFont(font_subtitle)
-        btn_saved_cfg.setFixedSize(150, 80)
-        btn_new_session.setFixedSize(150, 80)
+        btn_saved_cfg.setFixedSize(170, 60)
+        btn_new_session.setFixedSize(150, 60)
         btn_group = QHBoxLayout()
         btn_group.setContentsMargins(25, 25, 25, 25)
         btn_group.addWidget(btn_saved_cfg)
@@ -99,7 +93,7 @@ class Welcome(QWidget):
         layout.setContentsMargins(25, 25, 25, 25)
         layout.addStretch(1)
         self.setLayout(layout)
-        self.setGeometry(311, 186, 817, 330)
+        self.setGeometry(311, 186, 517, 200)
 
 
 class FromSaved(QWidget):
@@ -274,7 +268,7 @@ class MainWindow(QWidget):
         btn_group_edit_test.addWidget(label_view_edit, 1, 3)
         btn_group_edit_test.addWidget(btn_edit_html, 1, 4)
         btn_group_edit_test.addWidget(btn_edit_txt, 1, 5)
-        btn_generate_output.clicked.connect(self.generate_output)
+        btn_generate_output.clicked.connect(lambda: generate_output(self.data, self.client_objects))
         # add layouts
         layout.addLayout(btn_group_collect_run_progress)
         layout.addLayout(table)
@@ -293,26 +287,6 @@ class MainWindow(QWidget):
         self.table_view.resizeColumnsToContents()
         return self.table_model
 
-    def run(self):
-        clients = self.airtable.daily_25(update=True)
-        source = f'Inputs/{self.files_source}'
-        if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
-            return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
-        else:
-            self.airtable.send_to_all(self.subject, self.files_source, clients)
-            # todo: add output file to dialog as 'msg_detail'
-            return dialog_info(Dialog(), "Email sent", "Emails sent successfully!")
-
-    def generate_output(self):
-        if self.data:
-            output = Output(self.client_objects)
-            path, filename = output.write()
-            output_filename = os.path.join(path, filename)
-            # todo: load generated output file instead of path
-            dialog_info(Dialog(), "Output", "Output generated!", f"Location:\n{os.path.abspath(output_filename)}")
-        else:
-            dialog_info(Dialog(), "Output", "Nothing to output.")
-
     def before_send_dialog(self):
         # todo: add checkbox for 'update table' clicked by default
         layout_grid = QGridLayout()
@@ -324,13 +298,13 @@ class MainWindow(QWidget):
         edit_files_source.editingFinished.connect(lambda: self.set_files_source(edit_files_source.text()))
         btn_edit = QPushButton("edit")
         btn_test = QPushButton("send test")
-        btn_test.clicked.connect(self.send_test)
+        btn_test.clicked.connect(lambda: send_test(self.subject, self.files_source))
         dialog = QDialog(self)
         dialog.setGeometry(511, 380, 400, 150)
         btn_send = QDialogButtonBox(QDialogButtonBox.Apply)
         btn_back = QDialogButtonBox(QDialogButtonBox.Cancel)
         btn_back.clicked.connect(dialog.accept)
-        btn_send.clicked.connect(self.run)
+        btn_send.clicked.connect(lambda: run(self.airtable, self.subject, self.files_source))
         layout_grid.addWidget(label_subject, 1, 0)
         layout_grid.addWidget(edit_subject, 1, 1)
         layout_grid.addWidget(label_files_source, 2, 0)
@@ -349,15 +323,3 @@ class MainWindow(QWidget):
     def set_files_source(self, text):
         print(f"files_source set, \'{text}\'")
         self.files_source = text
-
-    def send_test(self):
-        test = Email(self.subject, self.files_source)
-        test_message = test.build_message()
-        if test_message:
-            t = test.send_test_once()
-            if t:
-                return dialog_error(Dialog(), "Test error", "Error sending test", t)
-            else:
-                return dialog_info(Dialog(), "Success", f"Test sent to {str(Creds.test_email)}!")
-        else:
-            return dialog_warning(Dialog(), "Warning", "File source not found...")
