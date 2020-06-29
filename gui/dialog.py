@@ -1,4 +1,7 @@
+import os
+
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGridLayout, QPlainTextEdit, QWidget
+from pathlib import Path
 
 
 class Dialog(QWidget):
@@ -29,7 +32,7 @@ class Message(QDialog):
         msg.setWordWrap(True)
         msg.setObjectName("msg")
         grid.addWidget(msg, 0, 0, 1, 2)
-        self.msg_detail = msg_detail = QPlainTextEdit(self)
+        self.msg_detail = msg_detail = QPlainTextEdit(self.msg_from_file)
         msg_detail.setReadOnly(True)
         msg_detail.setObjectName("msgDetail")
         grid.addWidget(msg_detail, 1, 0, 1, 2)
@@ -42,10 +45,17 @@ class Message(QDialog):
 
     def __init__(self, type_of, title, msg, msg_detail='', default_yes=True, parent=None):
         QDialog.__init__(self, parent)
+        self.msg_detail = msg_detail
+        self.msg_from_file = ''
+        self.is_path = msg_detail == Path(msg_detail)
+        if self.is_path:
+            with open(msg_detail, 'r+') as file:
+                for line in file.readlines():
+                    line = os.fspath(line)
+                    self.msg_from_file += line
         self.setup_ui()
         self.setWindowTitle(title)
         self.msg.setText(msg)
-        self.msg_detail.setPlainText(msg_detail)
         # todo: add show/hide details toggle
         # todo: resize dialog dynamically
         # self.msg_detail_toggle = self.btn_box.addButton()
@@ -70,3 +80,6 @@ class Message(QDialog):
 
         """if not msg_detail:
             self.msg_detail_toggle.setVisible(False)"""
+
+
+

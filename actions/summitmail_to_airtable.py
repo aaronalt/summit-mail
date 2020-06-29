@@ -52,15 +52,5 @@ class SummitMail:
                 print(error)
                 continue
         print("done collecting data")
-        # todo: add dialog
         return self.client_objects
 
-    def send_to_all(self, subject, files_source, clients):
-        # todo: move to utils
-        """
-        send email to all clients in the list
-        subject = email subject
-        files_source = path/to/email.html & path/to/email.txt
-        """
-        email = Email(subject, files_source)
-        email.send_external(clients)

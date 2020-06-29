@@ -81,10 +81,8 @@ def send_test(subject, file_source):
 def generate_output(data, client_objects):
     if data:
         output = Output(client_objects)
-        path, filename = output.write()
-        output_filename = os.path.join(path, filename)
-        # todo: load generated output file instead of path
-        dialog_info(Dialog(), "Output", "Output generated!", f"Location:\n{os.path.abspath(output_filename)}")
+        filepath = output.write()
+        dialog_info(Dialog(), "Output", "Output generated!", filepath)
     else:
         dialog_info(Dialog(), "Output", "Nothing to output.")
 
@@ -95,6 +93,8 @@ def run(airtable, subject, files_source):
     if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
         return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
     else:
-        airtable.send_to_all(subject, files_source, clients)
+        email = Email(subject, files_source)
+        filepath = email.send_external(clients)
         # todo: add output file to dialog as 'msg_detail'
-        return dialog_info(Dialog(), "Email sent", "Emails sent successfully!")
+        # todo: send path obj instead of str
+        return dialog_info(Dialog(), "Email sent", "Emails sent successfully!", filepath)

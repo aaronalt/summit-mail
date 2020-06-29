@@ -4,6 +4,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 import ssl
+from pathlib import Path
+
 from actions.output import Output
 from gui import dialog_error
 from gui.creds import Creds
@@ -62,8 +64,9 @@ class Email:
     def send_external(self, clients_list, write_output=True):
         message = self.build_message()
         output = Output(clients_list)
+        filepath = Path()
         if write_output:
-            output.write()
+            filepath = output.write()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
             server.login(self.sender_email, self.password)
             for each in clients_list:
@@ -72,7 +75,7 @@ class Email:
                         self.sender_email, each.email, message.as_string()
                     )
                 except smtplib.SMTPRecipientsRefused as e:
-                    # todo: dialog
                     dialog_error(Dialog(), "SMTP Error", f"Couldn't send email to {each.email}:\ne",
                                  traceback.format_exc())
                     pass
+        return filepath
