@@ -1,9 +1,7 @@
 import datetime
-import configparser
 import requests
 from airtable import Airtable
-
-from Client import Client
+from items.client import Client
 from actions.emailer import Email
 from gui.creds import Creds
 import traceback

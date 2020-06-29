@@ -1,6 +1,5 @@
 import os
 import datetime
-from ClientFilter import ClientFilter
 # todo: add dialogs
 
 class Output:

@@ -58,8 +58,6 @@ class Email:
         return 0
 
     def send_external(self, clients_list, write_output=True):
-        # to_filter = ClientFilter(csv_file)
-        # to_contact = to_filter.filter_emails()
         message = self.build_message()
         output = Output(clients_list)
         if write_output:
@@ -72,7 +70,6 @@ class Email:
                         self.sender_email, each.email, message.as_string()
                     )
                 except smtplib.SMTPRecipientsRefused as e:
-                    print(e)
                     # todo: dialog
                     pass
         return "Finished!"
