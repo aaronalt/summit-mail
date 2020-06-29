@@ -5,7 +5,9 @@ from email.mime.text import MIMEText
 import smtplib
 import ssl
 from actions.output import Output
+from gui import dialog_error
 from gui.creds import Creds
+from gui.dialog import Dialog
 
 
 class Email:
@@ -71,5 +73,6 @@ class Email:
                     )
                 except smtplib.SMTPRecipientsRefused as e:
                     # todo: dialog
+                    dialog_error(Dialog(), "SMTP Error", f"Couldn't send email to {each.email}:\ne",
+                                 traceback.format_exc())
                     pass
-        return "Finished!"
