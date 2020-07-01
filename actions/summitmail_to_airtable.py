@@ -1,8 +1,9 @@
 import datetime
 import requests
 from airtable import Airtable
+from gui import dialog_error
+from gui.dialog import Dialog
 from items.client import Client
-from actions.emailer import Email
 from gui.creds import Creds
 import traceback
 
@@ -17,9 +18,6 @@ class SummitMail:
         self.client_objects = []
 
     def test(self):
-        # todo: remove dialog from actions into controller/ui
-        from gui.dialog import Dialog
-        from gui import dialog_error
         try:
             self._contacts.get_all()
         except requests.exceptions.HTTPError as e:
@@ -47,10 +45,8 @@ class SummitMail:
                     self._contacts.update(record['id'], fields, typecast=True)
                 else:
                     continue
-            except KeyError as error:
-                # todo: add dialog
-                print(error)
+            except KeyError:
                 continue
-        print("done collecting data")
+        print("done collecting data from 'summit_to_airtable.daily_25()'")
         return self.client_objects
 

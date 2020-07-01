@@ -95,6 +95,4 @@ def run(airtable, subject, files_source):
     else:
         email = Email(subject, files_source)
         filepath = email.send_external(clients)
-        # todo: add output file to dialog as 'msg_detail'
-        # todo: send path obj instead of str
         return dialog_info(Dialog(), "Email sent", "Emails sent successfully!", filepath)
