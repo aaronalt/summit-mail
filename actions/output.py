@@ -18,12 +18,11 @@ class Output:
         file_dated = f'{date_today}__{i}.txt'
         while os.path.exists(file_dated):
             i += 1
-            file_dated = f'{date_today}__{i}.txt'
-        return file_dated
+        return date_today, file_dated, i
 
     def write(self):
         date_today = self.d.ctime()
-        file_dated = self.get_date_and_increment()
+        date, file_dated, i = self.get_date_and_increment()
         with open(f'{self.path}/{file_dated}', 'wt') as file:
             total = 0
             emailed = [client for client in self.clients_contacted]
