@@ -1,12 +1,14 @@
-class Creds:
+from dataclasses import dataclass
 
-    def __init__(self, base_id, api_key, cfg_name, sender_email, sender_email_pw, test_email):
-        self.base_id = base_id
-        self.api_key = api_key
-        self.cfg_name = cfg_name
-        self.sender_email = sender_email
-        self.sender_email_pw = sender_email_pw
-        self.test_email = test_email
+
+@dataclass
+class Creds:
+    base_id: str
+    api_key: str
+    cfg_name: str
+    sender_email: str
+    sender_email_pw: str
+    test_email: str
 
     @property
     def base_id(self):
