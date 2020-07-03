@@ -25,6 +25,7 @@ class OutputTest(unittest.TestCase):
         date_today, file_dated, i = self.output.get_date_and_increment()
         self.assertEqual(file_dated, f'{date_today}__{i}.txt')
         self.output.write()
+        # todo: test increment how to do?
         if i == 2:
             self.assertEqual(file_dated, f'{date_today}__2.txt')
 
@@ -32,7 +33,8 @@ class OutputTest(unittest.TestCase):
         self.assertEqual(len(self.clients_contacted), 5)
         returned_path = self.output.write()
         self.assertTrue(returned_path)
-
+        self.assertTrue(hasattr(returned_path, 'root'))
+        print(dir(returned_path))
 
     def tearDown(self):
         for root, dirs, files in os.walk("../docs/test_docs"):
