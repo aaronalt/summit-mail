@@ -14,14 +14,12 @@ from gui.dialog import Dialog
 
 class Email:
 
-    def __init__(self, subject, files_source):
+    def __init__(self, subject, files_source, file_path='../docs'):
         self.context = ssl.create_default_context()
         self.message = MIMEMultipart("alternative")
-
         self.subject = subject
-        self.files_source_txt = f'../docs/{files_source}.txt'
-        self.files_source_html = f'../docs/{files_source}.html'
-
+        self.files_source_txt = f'{file_path}/{files_source}.txt'
+        self.files_source_html = f'{file_path}/{files_source}.html'
         # todo: use cryptography lib to store/read config files
         self.cfg_name = f"../config/{Creds.cfg_name}.ini"
         self.cfg = configparser.ConfigParser()
@@ -29,7 +27,6 @@ class Email:
         self.sender_email = self.cfg['settings']['sender_email']
         self.password = self.cfg['settings']['sender_email_password']
         self.test_email = self.cfg['settings']['test_email']
-        print(self.cfg.sections())
 
     def build_message(self):
         message = self.message
