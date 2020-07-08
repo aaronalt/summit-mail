@@ -6,7 +6,7 @@ from pathlib import Path
 
 class Output:
 
-    def __init__(self, clients_contacted, path="../docs/outputs/", output_filename="output"):
+    def __init__(self, clients_contacted, path, output_filename="output"):
         self.path = path
         self.output_filename = output_filename
         self.clients_contacted = clients_contacted

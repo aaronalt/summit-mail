@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from actions.emailer import Email
 from actions.output import Output
 from gui import dialog_error, dialog_info, dialog_warning
@@ -58,8 +60,7 @@ def save_cfg():
 
 def cfg_from_selection(item):
     """ this function will create an .ini file with env variables stored from user input"""
-    print(f'cfg: \'{item}\'')
-    cfg.read(os.path.join('../config/', item))
+    cfg.read(Path(f'../config/{item}.ini'))
     Creds.api_key = cfg['ENV']['airtable_api_key']
     Creds.base_id = cfg['ENV']['airtable_base_id']
     Creds.cfg_name = cfg['ENV']['cfg_name']

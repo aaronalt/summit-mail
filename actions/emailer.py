@@ -21,6 +21,8 @@ class Email:
         self.files_source_txt = f'{file_path}/{files_source}.txt'
         self.files_source_html = f'{file_path}/{files_source}.html'
         # todo: use cryptography lib to store/read config files
+
+        print(getattr(Creds, "cfg_name"), )
         self.cfg_name = f"../config/{Creds.cfg_name}.ini"
         self.cfg = configparser.ConfigParser()
         self.cfg.read(self.cfg_name)
@@ -58,9 +60,9 @@ class Email:
                 return traceback.format_exc()
         return 0
 
-    def send_external(self, clients_list, write_output=True):
+    def send_external(self, clients_list, write_output=True, output_path="../docs/outputs/"):
         message = self.build_message()
-        output = Output(clients_list)
+        output = Output(clients_list, output_path)
         filepath = Path()
         if write_output:
             filepath = output.write()
