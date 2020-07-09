@@ -29,7 +29,7 @@ class EmailerTest(unittest.TestCase):
                            'test_email': str(self.creds.test_email)}
         with open(f'../config/{self.creds.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
-        cfg_from_selection(self.creds.cfg_name)
+        cfg_from_selection(f'{self.creds.cfg_name}.ini')
         self.email = Email(self.subject, self.files_source, self.filepath)
 
         self.clients_list = [Client("test1", "testland", "t.com", "test1@t.com"),

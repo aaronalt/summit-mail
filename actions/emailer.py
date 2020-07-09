@@ -22,7 +22,6 @@ class Email:
         self.files_source_html = f'{file_path}/{files_source}.html'
         # todo: use cryptography lib to store/read config files
 
-        print(getattr(Creds, "cfg_name"), )
         self.cfg_name = f"../config/{Creds.cfg_name}.ini"
         self.cfg = configparser.ConfigParser()
         self.cfg.read(self.cfg_name)

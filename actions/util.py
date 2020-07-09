@@ -60,7 +60,7 @@ def save_cfg():
 
 def cfg_from_selection(item):
     """ this function will create an .ini file with env variables stored from user input"""
-    cfg.read(Path(f'../config/{item}.ini'))
+    cfg.read(Path(f'../config/{item}'))
     Creds.api_key = cfg['ENV']['airtable_api_key']
     Creds.base_id = cfg['ENV']['airtable_base_id']
     Creds.cfg_name = cfg['ENV']['cfg_name']
