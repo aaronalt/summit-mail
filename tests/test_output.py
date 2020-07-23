@@ -13,7 +13,7 @@ class OutputTest(unittest.TestCase):
     def setUp(self):
         self.clients_contacted = [
             Client("Test Company 1", "India", "test.company.1", "test@company.1"),
-            Client("Test Company 2", "India", "test.company.2", "test@company.2"),
+            Client("Test & Test", "Testland, republic of", "https://test.company.2", "test@company.2"),
             Client("Test Company 3", "India", "test.company.3", "test@company.3"),
             Client("Test Company 4", "India", "test.company.4", "test@company.4"),
             Client("Test Company 5", "India", "test.company.5", "test@company.5")

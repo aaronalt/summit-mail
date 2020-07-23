@@ -31,7 +31,7 @@ class SummitMail:
         contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=25)
         for i in contacts:
             try:
-                new_client = Client(i['fields']['name'].strip(),
+                new_client = Client(i['fields']['name'].strip().replace("'", ""),
                                     i['fields']['country'],
                                     i['fields']['website'],
                                     i['fields']['email'].strip())

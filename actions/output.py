@@ -6,7 +6,9 @@ from pathlib import Path
 
 class Output:
 
-    def __init__(self, clients_contacted, path, output_filename="output"):
+    def __init__(self, clients_contacted=None, path='', output_filename="output"):
+        if clients_contacted is None:
+            clients_contacted = []
         self.path = path
         self.output_filename = output_filename
         self.clients_contacted = clients_contacted

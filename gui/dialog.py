@@ -78,6 +78,12 @@ class Message(QDialog):
             self.msg_detail.deleteLater()
             self.msg_detail = None
 
+        self.is_info = type_of == self.info_
+        if self.is_info:
+            if not msg_detail:
+                self.grid.removeWidget(self.msg_detail)
+                self.msg_detail.deleteLater()
+                self.msg_detail = None
         """if not msg_detail:
             self.msg_detail_toggle.setVisible(False)"""
 

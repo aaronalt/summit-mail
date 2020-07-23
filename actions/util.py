@@ -1,13 +1,12 @@
 from pathlib import Path
-
 from actions.emailer import Email
 from actions.output import Output
+from gui.dialog import Dialog
 from gui import dialog_error, dialog_info, dialog_warning
 from gui.creds import Creds
 import configparser
 import os
 import sys
-from gui.dialog import Dialog
 
 cfg = configparser.ConfigParser()
 
@@ -37,8 +36,6 @@ def cfg_test_email(value):
 
 
 def save_cfg():
-    from gui.dialog import Dialog
-    from gui import dialog_info, dialog_warning
     cfg['ENV'] = {'cfg_name': str(Creds.cfg_name),
                   'airtable_api_key': str(Creds.api_key),
                   'airtable_base_id': str(Creds.base_id)}
@@ -49,13 +46,12 @@ def save_cfg():
         cfg.write(configfile)
 
     if not cfg['ENV']['cfg_name']:
-        return dialog_warning(Dialog(), "Warning", "config name cannot be empty", show=True)
+        return dialog_warning(Dialog(), "Warning", "config name cannot be empty")
     if not cfg['ENV']['airtable_api_key']:
-        return dialog_warning(Dialog(), "Warning", "config name cannot be empty", show=True)
+        return dialog_warning(Dialog(), "Warning", "config name cannot be empty")
     else:
         return dialog_info(Dialog(), "Saved", "config saved successfully!", f'Save location:\n'
-                                                                            f'../config/{cfg["ENV"]["cfg_name"]}',
-                           show=True)
+                                                                            f'../config/{cfg["ENV"]["cfg_name"]}')
 
 
 def cfg_from_selection(item):
@@ -74,7 +70,7 @@ def send_test(subject, file_source):
         if t:
             return dialog_error(Dialog(), "Test error", "Error sending test", t)
         else:
-            return dialog_info(Dialog(), "Success", f"Test sent to {str(Creds.test_email)}!")
+            return dialog_info(Dialog(), "Success", f"Test sent to {cfg['ENV']['test_email']}!")
     else:
         return dialog_warning(Dialog(), "Warning", "File source not found...")
 
