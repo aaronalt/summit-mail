@@ -48,11 +48,8 @@ class EmailerTest(unittest.TestCase):
     def test_send_test_once(self):
         no_creds = self.email.send_test_once()
         self.assertTrue(no_creds)
-        # todo: test with actual working credentials
 
     def test_send_external(self):
-        # no_creds = self.email.send_external(self.clients_list,
-        #                         output_path="../docs/test_docs/")
         self.assertRaises(SMTPAuthenticationError)
 
     def tearDown(self):

@@ -1,6 +1,5 @@
 import os
 import datetime
-# todo: add dialogs
 from pathlib import Path
 
 

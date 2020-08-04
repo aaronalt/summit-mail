@@ -29,6 +29,10 @@ class SummitMail:
 
     def daily_25(self, update=False):
         contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=25)
+        updated = self.filter_contacts(contacts, update)
+        return updated
+
+    def filter_contacts(self, contacts, update=False):
         for i in contacts:
             try:
                 new_client = Client(i['fields']['name'].strip().replace("'", ""),
