@@ -6,7 +6,6 @@ from gui import dialog_error, dialog_info, dialog_warning
 from gui.creds import Creds
 import configparser
 import os
-import sys
 
 cfg = configparser.ConfigParser()
 
@@ -70,7 +69,7 @@ def send_test(subject, file_source):
         if t:
             return dialog_error(Dialog(), "Test error", "Error sending test", t)
         else:
-            return dialog_info(Dialog(), "Success", f"Test sent to {cfg['ENV']['test_email']}!")
+            return dialog_info(Dialog(), "Success", f"Test sent!")
     else:
         return dialog_warning(Dialog(), "Warning", "File source not found...")
 

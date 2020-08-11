@@ -20,8 +20,6 @@ class Email:
         self.subject = subject
         self.files_source_txt = f'{file_path}/{files_source}.txt'
         self.files_source_html = f'{file_path}/{files_source}.html'
-        # todo: use cryptography lib to store/read config files
-
         self.cfg_name = f"../config/{Creds.cfg_name}.ini"
         self.cfg = configparser.ConfigParser()
         self.cfg.read(self.cfg_name)
@@ -33,7 +31,6 @@ class Email:
         message = self.message
         message["Subject"] = self.subject
         message["From"] = self.sender_email
-        # todo: error reading None or blank file
         try:
             with open(self.files_source_txt, "r") as t:
                 text = t.read()
