@@ -13,8 +13,11 @@ class SummitMail:
     d = datetime.datetime.now()
     date = f'{d.day}/{d.month}/{d.year}'
 
-    def __init__(self, table_name="New Contacts"):
-        self._contacts = Airtable(Creds.base_id, table_name, Creds.api_key)
+    def __init__(self, table_name="New Contacts", no_connection=[]):
+        if no_connection:
+            self._contacts = no_connection
+        else:
+            self._contacts = Airtable(str(Creds.base_id), table_name, str(Creds.api_key))
         self.client_objects = []
 
     def test(self):
@@ -40,12 +43,12 @@ class SummitMail:
                                     i['fields']['website'],
                                     i['fields']['email'].strip())
                 self.client_objects.append(new_client)
-                record = self._contacts.match('name', new_client.name)
                 fields = {'name': new_client.name, 'country': new_client.country, 'website': new_client.website,
                           'email': new_client.email, 'status': 'Contacted', 'contact date': self.date,
                           'contact method': 'Email',
                           'source': 'goodfirms.co', 'result': 'No response'}
                 if update:
+                    record = self._contacts.match('name', new_client.name)
                     self._contacts.update(record['id'], fields, typecast=True)
                 else:
                     continue
