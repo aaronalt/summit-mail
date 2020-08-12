@@ -69,9 +69,9 @@ def send_test(subject, file_source):
         if t:
             return dialog_error(Dialog(), "Test error", "Error sending test", t)
         else:
-            return dialog_info(Dialog(), "Success", f"Test sent!")
+            return dialog_info(Dialog(), "Success", f"Test sent!", "Check your inbox.")
     else:
-        return dialog_warning(Dialog(), "Warning", "File source not found...")
+        return dialog_warning(Dialog(), "Warning", "File source not found...", "Check your file.")
 
 
 def generate_output(data, client_objects):

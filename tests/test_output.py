@@ -25,7 +25,6 @@ class OutputTest(unittest.TestCase):
         date_today, file_dated, i = self.output.get_date_and_increment()
         self.assertEqual(file_dated, f'{date_today}__{i}.txt')
         self.output.write()
-        # todo: test increment
         if i == 2:
             self.assertEqual(file_dated, f'{date_today}__2.txt')
 

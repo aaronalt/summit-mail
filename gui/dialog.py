@@ -60,6 +60,10 @@ class Message(QDialog):
         # todo: resize dialog dynamically
         # self.msg_detail_toggle = self.btn_box.addButton()
 
+        if not msg_detail:
+            self.grid.removeWidget(self.msg_detail)
+            self.msg_detail = None
+
         self.is_question = type_of == self.question_
         if self.is_question:
             self.btn_box.setStandardButtons(self.btn_box.Yes|self.btn_box.No)
@@ -78,14 +82,13 @@ class Message(QDialog):
             self.msg_detail.deleteLater()
             self.msg_detail = None
 
-        self.is_info = type_of == self.info_
+        """self.is_info = type_of == self.info_
         if self.is_info:
             if not msg_detail:
                 self.grid.removeWidget(self.msg_detail)
                 self.msg_detail.deleteLater()
-                self.msg_detail = None
-        """if not msg_detail:
-            self.msg_detail_toggle.setVisible(False)"""
+                self.msg_detail = None"""
+
 
 
 
