@@ -26,11 +26,13 @@ class Email:
         self.sender_email = self.cfg['settings']['sender_email']
         self.password = self.cfg['settings']['sender_email_password']
         self.test_email = self.cfg['settings']['test_email']
+        self.send_to = ""
 
     def build_message(self):
         message = self.message
         message["Subject"] = self.subject
         message["From"] = self.sender_email
+        message["To"] = self.send_to
         try:
             with open(self.files_source_txt, "r") as t:
                 text = t.read()
@@ -45,6 +47,7 @@ class Email:
             return ""
 
     def send_test_once(self):
+        self.send_to = self.test_email
         message = self.build_message()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
             try:
@@ -57,7 +60,6 @@ class Email:
         return 0
 
     def send_external(self, clients_list, write_output=True, output_path="../docs/outputs/"):
-        message = self.build_message()
         output = Output(clients_list, output_path)
         filepath = Path()
         if write_output:
@@ -66,6 +68,8 @@ class Email:
             server.login(self.sender_email, self.password)
             for each in clients_list:
                 try:
+                    self.send_to = each.email
+                    message = self.build_message()
                     server.sendmail(
                         self.sender_email, each.email, message.as_string()
                     )
