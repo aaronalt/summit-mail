@@ -19,7 +19,8 @@ class EmailerTest(unittest.TestCase):
         self.subject = 'Re: Test Email'
         self.files_source = 'test'
         self.filepath = '../docs/test_docs'
-        self.creds = Creds('id', 'apikey', 'test_config', 'aaron@mango-byte.com', 'pw', 'aaronalt07@gmail.com')
+        # using Mailtrap.io creds
+        self.creds = Creds('id', 'apikey', 'test_config', 'bc5d0820e2298f', '240cb701d2b5e5', 'aaronalt07@gmail.com')
         cfg = configparser.ConfigParser()
         cfg['ENV'] = {'cfg_name': str(self.creds.cfg_name),
                       'airtable_api_key': str(self.creds.api_key),
@@ -50,7 +51,9 @@ class EmailerTest(unittest.TestCase):
         self.assertTrue(no_creds)
 
     def test_send_external(self):
-        self.assertRaises(SMTPAuthenticationError)
+        emails_sent = self.email.send_external(self.clients_list, "smtp.mailtrap.io", True,
+                                               "../docs/test_docs/outputs")
+        self.assertTrue(emails_sent)
 
     def tearDown(self):
         for root, dirs, files in os.walk("../config"):
