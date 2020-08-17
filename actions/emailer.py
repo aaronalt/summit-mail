@@ -33,6 +33,7 @@ class Email:
         message["Subject"] = self.subject
         message["From"] = self.sender_email
         message["To"] = self.send_to
+        message["Bcc"] = None
         try:
             with open(self.files_source_txt, "r") as t:
                 text = t.read()
@@ -59,12 +60,13 @@ class Email:
                 return traceback.format_exc()
         return 0
 
-    def send_external(self, clients_list, write_output=True, output_path="../docs/outputs/"):
+    def send_external(self, clients_list, email_server="smtp.gmail.com", write_output=True,
+                      output_path="../docs/outputs/"):
         output = Output(clients_list, output_path)
         filepath = Path()
         if write_output:
             filepath = output.write()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
+        with smtplib.SMTP_SSL(email_server, 465, context=self.context) as server:
             server.login(self.sender_email, self.password)
             for each in clients_list:
                 try:
