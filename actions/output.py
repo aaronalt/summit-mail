@@ -5,7 +5,7 @@ from pathlib import Path
 
 class Output:
 
-    def __init__(self, clients_contacted=None, path='', output_filename="output"):
+    def __init__(self, clients_contacted=None, path='../docs/outputs', output_filename="output"):
         if clients_contacted is None:
             clients_contacted = []
         self.path = path
