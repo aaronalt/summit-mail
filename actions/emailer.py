@@ -14,7 +14,7 @@ from gui.dialog import Dialog
 
 class Email:
 
-    def __init__(self, subject, files_source, file_path='../docs'):
+    def __init__(self, subject, files_source, file_path='../docs/inputs/'):
         self.context = ssl.create_default_context()
         self.message = MIMEMultipart("alternative")
         self.subject = subject
@@ -26,14 +26,11 @@ class Email:
         self.sender_email = self.cfg['settings']['sender_email']
         self.password = self.cfg['settings']['sender_email_password']
         self.test_email = self.cfg['settings']['test_email']
-        self.send_to = ""
 
     def build_message(self):
         message = self.message
         message["Subject"] = self.subject
         message["From"] = self.sender_email
-        message["To"] = self.send_to
-        message["Bcc"] = None
         try:
             with open(self.files_source_txt, "r") as t:
                 text = t.read()
@@ -47,26 +44,32 @@ class Email:
         except FileNotFoundError:
             return ""
 
-    def send_test_once(self):
-        self.send_to = self.test_email
+    def send_test_once(self, sender=None, host="smtp.gmail.com", port=465, server_host=None,
+                       server_pw=None):
         message = self.build_message()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context) as server:
+        if sender is None:
+            sender = self.sender_email
+        if server_host is None:
+            server_host = self.sender_email
+        if server_pw is None:
+            server_pw = self.password
+        with smtplib.SMTP_SSL(host, port) as server:
             try:
-                server.login(self.sender_email, self.password)
-                server.sendmail(
-                    self.sender_email, self.test_email, message.as_string()
+                server.login(server_host, server_pw)
+                server.send_message(
+                    message, sender, self.test_email
                 )
             except smtplib.SMTPAuthenticationError:
                 return traceback.format_exc()
         return 0
 
-    def send_external(self, clients_list, email_server="smtp.gmail.com", write_output=True,
+    def send_external(self, clients_list, host="smtp.gmail.com", port=465, write_output=True,
                       output_path="../docs/outputs/"):
         output = Output(clients_list, output_path)
         filepath = Path()
         if write_output:
             filepath = output.write()
-        with smtplib.SMTP_SSL(email_server, 465, context=self.context) as server:
+        with smtplib.SMTP_SSL(host, port, context=self.context) as server:
             server.login(self.sender_email, self.password)
             for each in clients_list:
                 try:

@@ -293,6 +293,7 @@ class MainWindow(QWidget):
         label_files_source = QLabel("Files Source")
         edit_subject = QLineEdit()
         edit_files_source = QComboBox()
+        edit_files_source.setPlaceholderText("Choose file source...")
         edit_files_source.setStyleSheet("color: white")
         files_sources = []
         for source in os.listdir('../docs/inputs'):
@@ -301,7 +302,7 @@ class MainWindow(QWidget):
             if new_source not in files_sources:
                 files_sources.append(new_source)
         edit_files_source.addItems(files_sources)
-        edit_files_source.activated[str].connect(lambda: self.set_files_source(edit_files_source.currentText()))
+        edit_files_source.currentTextChanged.connect(self.set_files_source)
         edit_subject.editingFinished.connect(lambda: self.set_subject(edit_subject.text()))
         btn_edit = QPushButton("edit")
         btn_test = QPushButton("send test")

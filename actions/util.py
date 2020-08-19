@@ -1,3 +1,4 @@
+import traceback
 from pathlib import Path
 from actions.emailer import Email
 from actions.output import Output
@@ -71,7 +72,8 @@ def send_test(subject, file_source):
         else:
             return dialog_info(Dialog(), "Success", f"Test sent!", "Check your inbox.")
     else:
-        return dialog_warning(Dialog(), "Warning", "File source not found...", "Check your file.")
+        print(traceback.format_exc())
+        return dialog_warning(Dialog(), "Warning", "File source not found...", traceback.format_exc())
 
 
 def generate_output(data, client_objects):
