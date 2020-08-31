@@ -20,7 +20,8 @@ class EmailerTest(unittest.TestCase):
         self.files_source = 'test'
         self.filepath = '../docs/test_docs'
         # using Mailtrap.io creds
-        self.creds = Creds('id', 'apikey', 'test_config', 'bc5d0820e2298f', '240cb701d2b5e5', 'aaronalt07@gmail.com')
+        self.creds = Creds('id', 'apikey', 'test_config', 'aaron@mango-byte.com', 'sjmuclvzdtaqbhxa',
+                           'aaronalt07@gmail.com')
         cfg = configparser.ConfigParser()
         cfg['ENV'] = {'cfg_name': str(self.creds.cfg_name),
                       'airtable_api_key': str(self.creds.api_key),
@@ -33,11 +34,12 @@ class EmailerTest(unittest.TestCase):
         cfg_from_selection(f'{self.creds.cfg_name}.ini')
         self.email = Email(self.subject, self.files_source, self.filepath)
 
-        self.clients_list = [Client("test1", "testland", "t.com", "test1@t.com"),
-                             Client("test2", "testland", "e.com", "test2@t.com"),
-                             Client("test3", "testland", "r-74.co", "test3@t.com"),
-                             Client("test4", "testland", "p.me", "test4@t.com"),
-                             Client("test5", "testland", "rrr.io", "test5@t.com")]
+        self.clients_list = [Client("test1", "testland", "t.com", "aaronalt07@gmail.com"),
+                             Client("test2", "testland", "e.com", "aaronalt08@gmail.com"),
+                             Client("test3", "testland", "r-74.co", "aaronalt09@gmail.com"),
+                             Client("test4", "testland", "p.me", "aaronalt06@gmail.com"),
+                             Client("test5", "testland", "rrr.io", "aaronalt05@gmail.com")]
+
 
     def test_build_message(self):
         message = self.email.build_message()
@@ -47,13 +49,19 @@ class EmailerTest(unittest.TestCase):
         self.assertFalse(email_blank.build_message())
 
     def test_send_test_once(self):
-        no_creds = self.email.send_test_once()
-        self.assertTrue(no_creds)
+        #no_creds = self.email.send_test_once("aaron@mango-byte.com")
+        #self.assertFalse(no_creds)
+        new_func = self.email.build_and_send("aaronalt07@gmail.com")
+        self.assertTrue(new_func)
+
 
     def test_send_external(self):
-        emails_sent = self.email.send_external(self.clients_list, "smtp.mailtrap.io", True,
-                                               "../docs/test_docs/outputs")
-        self.assertTrue(emails_sent)
+        #emails_sent = self.email.send_external(self.clients_list, write_output=True,
+                                               #output_path="../docs/test_docs/output")
+        #self.assertTrue(emails_sent)
+        send_tolist = self.email.filter_list(self.clients_list, write_output=True,
+                                             output_path="../docs/test_docs/outputs")
+        self.assertTrue(send_tolist)
 
     def tearDown(self):
         for root, dirs, files in os.walk("../config"):
