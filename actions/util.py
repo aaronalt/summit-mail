@@ -66,7 +66,7 @@ def send_test(subject, file_source):
     test = Email(subject, file_source)
     test_message = test.build_message()
     if test_message:
-        t = test.send_test_once()
+        t = test.build_and_send()
         if t:
             return dialog_error(Dialog(), "Test error", "Error sending test", t)
         else:
@@ -87,10 +87,10 @@ def generate_output(data, client_objects):
 
 def run(airtable, subject, files_source):
     clients = airtable.daily_25(update=True)
-    source = f'../docs/{files_source}'
+    source = f'../docs/inputs/{files_source}'
     if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
         return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
     else:
         email = Email(subject, files_source)
-        filepath = email.send_external(clients)
+        filepath = email.filter_list(clients)
         return dialog_info(Dialog(), "Email sent", "Emails sent successfully!", filepath)

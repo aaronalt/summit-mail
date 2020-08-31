@@ -30,7 +30,7 @@ class Email:
         self.rec_list = []
 
     def build_and_send(self, to_addrs=None, host="smtp.gmail.com", port=465, write_output=True,
-                      output_path="../docs/outputs/"):
+                      output_path="../docs/outputs/", conn_test=False):
         # build
         if to_addrs is None:
             to_addrs = self.test_email
@@ -39,6 +39,26 @@ class Email:
         msg["From"] = self.sender_email
         msg["To"] = to_addrs
         msg["Bcc"] = ""
+
+        # test Airtable connection
+        if conn_test:
+            try:
+                with open(self.files_source_txt, "r") as t:
+                    text = t.read()
+                test_part = MIMEText(text, "plain")
+                msg.attach(test_part)
+                with smtplib.SMTP_SSL(host, port, context=self.context) as server:
+                    server.login(self.sender_email, self.password)
+                    try:
+                        server.sendmail(
+                            self.sender_email, to_addrs, msg.as_string()
+                        )
+                    finally:
+                        return msg
+            except FileNotFoundError:
+                return ""
+
+        # send mail
         try:
             with open(self.files_source_txt, "r") as t:
                 text = t.read()
@@ -48,8 +68,6 @@ class Email:
             part2 = MIMEText(html, "html")
             msg.attach(part1)
             msg.attach(part2)
-
-            # send
             with smtplib.SMTP_SSL(host, port, context=self.context) as server:
                 server.login(self.sender_email, self.password)
                 try:
@@ -64,14 +82,19 @@ class Email:
         except FileNotFoundError:
             return ""
 
-    def filter_list(self, client_list, write_output=False, output_path="../docs/outputs/"):
+    def filter_list(self, client_list, write_output=True, output_path="../docs/outputs/"):
         for each in client_list:
             self.rec_list.append(each)
             self.build_and_send(each.email)
+        filepath = Path()
         if write_output:
             output = Output(self.rec_list, output_path)
             filepath = output.write()
-            return filepath
+        return filepath
+
+
+
+
 
     def build_message(self, to_addrs=None):
         if to_addrs is None:
