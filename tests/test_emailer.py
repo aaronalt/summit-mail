@@ -42,23 +42,23 @@ class EmailerTest(unittest.TestCase):
 
 
     def test_build_message(self):
-        message = self.email.build_message()
+        # message = self.email.build_message()
         self.assertEqual(message['Subject'], self.subject)
         self.assertEqual(message['From'], self.creds.sender_email)
         email_blank = Email(self.subject, "")
         self.assertFalse(email_blank.build_message())
 
     def test_send_test_once(self):
-        #no_creds = self.email.send_test_once("aaron@mango-byte.com")
-        #self.assertFalse(no_creds)
+        # no_creds = self.email.send_test_once("aaron@mango-byte.com")
+        # self.assertFalse(no_creds)
         new_func = self.email.build_and_send("aaronalt07@gmail.com")
         self.assertTrue(new_func)
 
 
     def test_send_external(self):
-        #emails_sent = self.email.send_external(self.clients_list, write_output=True,
+        # emails_sent = self.email.send_external(self.clients_list, write_output=True,
                                                #output_path="../docs/test_docs/output")
-        #self.assertTrue(emails_sent)
+        # self.assertTrue(emails_sent)
         send_tolist = self.email.filter_list(self.clients_list, write_output=True,
                                              output_path="../docs/test_docs/outputs")
         self.assertTrue(send_tolist)
