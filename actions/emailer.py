@@ -49,12 +49,7 @@ class Email:
                 msg.attach(test_part)
                 with smtplib.SMTP_SSL(host, port, context=self.context) as server:
                     server.login(self.sender_email, self.password)
-                    try:
-                        server.sendmail(
-                            self.sender_email, to_addrs, msg.as_string()
-                        )
-                    finally:
-                        return msg
+                    return msg
             except FileNotFoundError:
                 return ""
 
