@@ -64,7 +64,7 @@ def cfg_from_selection(item):
 
 def send_test(subject, file_source):
     test = Email(subject, file_source)
-    test_message = test.build_message()
+    test_message = test.build_and_send(conn_test=True)
     if test_message:
         t = test.build_and_send()
         if t:
