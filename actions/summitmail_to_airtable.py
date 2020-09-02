@@ -54,6 +54,5 @@ class SummitMail:
                     continue
             except KeyError:
                 continue
-        print("done collecting data from 'summit_to_airtable.daily_25()'")
         return self.client_objects
 
