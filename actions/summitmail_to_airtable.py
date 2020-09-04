@@ -48,8 +48,8 @@ class SummitMail:
                       i['fields']['website'],
                       i['fields']['email'].strip())
 
-    def daily_25(self, update=False):
-        contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=25)
+    def get_contacts_from_airtable(self, update=False, max_records=25):
+        contacts = self._contacts.get_all(formula="AND({status}='',NOT({email}=''))", maxRecords=max_records)
         updated = self.filter_contacts(contacts, update)
         return updated
 

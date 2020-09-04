@@ -277,8 +277,12 @@ class MainWindow(QWidget):
         self.setGeometry(311, 186, 817, 600)
 
     def collect_data(self):
-        """ connect to AirTable; return data before sending """
-        self.client_objects = self.airtable.daily_25()
+        """
+        Connect to Airtable; return data before sending
+
+        :returns: table model change
+        """
+        self.client_objects = self.airtable.get_contacts_from_airtable()
         for c in self.client_objects:
             client = [c.name, c.country, c.website, c.email]
             self.data.append(client)

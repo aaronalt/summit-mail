@@ -78,15 +78,15 @@ def send_test(subject, file_source):
 
 def generate_output(data, client_objects):
     if data:
-        output = Output(client_objects)
+        output = Output(clients_contacted=client_objects)
         filepath = output.write()
         dialog_info(Dialog(), "Output", "Output generated!", filepath)
     else:
-        dialog_info(Dialog(), "Output", "Nothing to output.")
+        dialog_warning(Dialog(), "Output", "Nothing to output.", "No data to write")
 
 
 def run(airtable, subject, files_source):
-    clients = airtable.daily_25(update=True)
+    clients = airtable.get_contacts_from_airtable(update=True)
     source = f'../docs/inputs/{files_source}'
     if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
         return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
