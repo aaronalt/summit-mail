@@ -32,9 +32,24 @@ class SummitMail:
     def get_all_contacts(self):
         return self._contacts.get_all()
 
-    def update_table(self, client_name, fields):
-        record = self._contacts.match('name', client_name)
+    def update_table(self, contact_name, fields):
+        record = self._contacts.match('name', contact_name)
         return self._contacts.update(record['id'], fields, typecast=True)
+
+    def delete_contact(self, contact_name):
+
+        return self._contacts.delete_by_field('name', contact_name)
+
+    def generate_fields(self, client_obj):
+        return {'name': client_obj.name,
+                'country': client_obj.country,
+                'website': client_obj.website,
+                'email': client_obj.email,
+                'status': 'Contacted',
+                'contact date': self.date,
+                'contact method': 'Email',
+                'source': 'goodfirms.co',
+                'result': 'No response'}
 
     def new_client_obj(self, i):
         """
@@ -58,11 +73,7 @@ class SummitMail:
             try:
                 new_client = self.new_client_obj(i)
                 self.client_objects.append(new_client)
-                fields = {'name': new_client.name, 'country': new_client.country, 'website': new_client.website,
-                          'email': new_client.email, 'status': 'Contacted', 'contact date': self.date,
-                          'contact method': 'Email',
-                          # todo: modulate source and result
-                          'source': 'goodfirms.co', 'result': 'No response'}
+                fields = self.generate_fields(new_client)
                 if update:
                     self.update_table(new_client.name, fields)
                 else:
