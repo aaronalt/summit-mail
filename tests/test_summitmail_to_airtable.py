@@ -1,15 +1,32 @@
 from __future__ import absolute_import
+
 import unittest
 
 from actions.summitmail_to_airtable import SummitMail
+from actions.util import cfg_from_selection, run
+from gui.creds import Creds
 
 
-class SummitmailToAirtableTest(unittest.TestCase):
+class SummitMailToAirtableTest(unittest.TestCase):
 
     def setUp(self):
-        self.contacts = [
+        # todo: learn config file name from ENV variables
+        self.cfg_input = input("config file name: ")
+        config = f'{self.cfg_input}.ini'
+        cfg_from_selection(config)
+        self.table_name = "test_table"
+        self.summitmail = SummitMail(Creds.base_id, table_name=self.table_name)
+        # delete all records from test table
+        self.all_contacts = self.summitmail.get_all_contacts()
+        for each in self.all_contacts:
+            try:
+                self.summitmail.delete_contact(each['fields']['name'])
+            except KeyError:
+                self.summitmail.delete_contact("blank", record_id=each['id'])
+        # add new test records
+        self.new_test_records = [
             {
-                "id": "rec036oHPuD0EtNhJ",
+                "id": "rec036oHPuD0EtNhP",
                 "fields": {
                     "name": "synergy",
                     "country": "India",
@@ -23,7 +40,7 @@ class SummitmailToAirtableTest(unittest.TestCase):
                 "createdTime": "2020-05-27T07:44:56.000Z"
             },
             {
-                "id": "reccdjhXaxdIejw1q",
+                "id": "reccdjhXaxdIejw1t",
                 "fields": {
                     "name": "coffee",
                     "country": "Ukraine",
@@ -37,7 +54,7 @@ class SummitmailToAirtableTest(unittest.TestCase):
                 "createdTime": "2020-05-27T07:26:13.000Z"
             },
             {
-                "id": "recWH7wg7kDKBi0yq",
+                "id": "recWH7wg7kDKBi0yt",
                 "fields": {
                     "name": "logics",
                     "country": "United States",
@@ -53,13 +70,22 @@ class SummitmailToAirtableTest(unittest.TestCase):
             }
         ]
 
+    def test_cfg_from_selection(self):
+        self.assertEqual(self.cfg_input, Creds.cfg_name)
+        self.assertTrue(Creds.api_key)
+        self.assertTrue(Creds.base_id)
+
     def test_filter_contacts(self):
-        filtered = SummitMail()
-        self.assertRaises(TypeError, filtered)
-        test_contacts = SummitMail("Test", self.contacts)
-        test_contacts_filtered = test_contacts.filter_contacts(self.contacts)
-        self.assertTrue(test_contacts_filtered)
-        self.assertEqual(len(test_contacts_filtered), len(self.contacts))
+        contact_list = self.summitmail.filter_contacts(self.new_test_records)
+        self.assertTrue(contact_list)
+
+
+    def tearDown(self):
+        for each in self.all_contacts:
+            try:
+                self.summitmail.delete_contact(each['fields']['name'])
+            except KeyError:
+                self.summitmail.delete_contact("blank", each['id'])
 
 
 if __name__ == '__main__':
