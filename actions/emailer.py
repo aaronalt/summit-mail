@@ -28,6 +28,7 @@ class Email:
         self.test_email = self.cfg['settings']['test_email']
         self.send_to = ""
         self.rec_list = []
+        self.results = {}
 
     def build_and_send(self, to_addrs=None, host="smtp.gmail.com", port=465, write_output=True,
                       output_path="../docs/outputs/", conn_test=False):
@@ -65,15 +66,15 @@ class Email:
             msg.attach(part2)
             with smtplib.SMTP_SSL(host, port, context=self.context) as server:
                 server.login(self.sender_email, self.password)
+                # server.set_debuglevel(True)
                 try:
                     server.sendmail(
                         self.sender_email, to_addrs, msg.as_string()
                     )
-                    print(f"email sent to {to_addrs}")
-                except smtplib.SMTPRecipientsRefused as e:
-                    dialog_error(Dialog(), "SMTP Error", f"Couldn't send email to:\ne",
-                                 traceback.format_exc())
-                    print(f"email \'{to_addrs}\' not found")
+                except smtplib.SMTPRecipientsRefused as refused:
+                    print(to_addrs, " refused!\n", refused)
+                except smtplib.SMTPException as e:
+                    print(e)
         except FileNotFoundError:
             return ""
 
@@ -81,6 +82,7 @@ class Email:
         for each in client_list:
             self.rec_list.append(each)
             self.build_and_send(each.email)
+        print(self.results)
         filepath = Path()
         if write_output:
             output = Output(self.rec_list, output_path)
