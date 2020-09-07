@@ -11,9 +11,10 @@ class SummitMailToAirtableTest(unittest.TestCase):
 
     def setUp(self):
         # todo: learn config file name from ENV variables
-        self.cfg_input = input("config file name: ")
-        config = f'{self.cfg_input}.ini'
-        cfg_from_selection(config)
+        # self.cfg_input = input("config file name: ")
+        # config = f'{self.cfg_input}.ini'
+        self.config = 'new contacts'
+        cfg_from_selection(f'{self.config}.ini')
         self.table_name = "test_table"
         self.summitmail = SummitMail(Creds.base_id, table_name=self.table_name)
         # delete all records from test table
@@ -71,13 +72,15 @@ class SummitMailToAirtableTest(unittest.TestCase):
         ]
 
     def test_cfg_from_selection(self):
-        self.assertEqual(self.cfg_input, Creds.cfg_name)
+        self.assertEqual(self.config, Creds.cfg_name)
         self.assertTrue(Creds.api_key)
         self.assertTrue(Creds.base_id)
 
     def test_filter_contacts(self):
         contact_list = self.summitmail.filter_contacts(self.new_test_records)
         self.assertTrue(contact_list)
+        self.assertEqual(len(contact_list), len(self.new_test_records))
+
 
 
     def tearDown(self):
