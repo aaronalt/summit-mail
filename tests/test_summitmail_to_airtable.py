@@ -81,8 +81,6 @@ class SummitMailToAirtableTest(unittest.TestCase):
         self.assertTrue(contact_list)
         self.assertEqual(len(contact_list), len(self.new_test_records))
 
-
-
     def tearDown(self):
         for each in self.all_contacts:
             try:
