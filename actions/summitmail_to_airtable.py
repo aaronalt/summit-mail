@@ -36,9 +36,11 @@ class SummitMail:
         record = self._contacts.match('name', contact_name)
         return self._contacts.update(record['id'], fields, typecast=True)
 
-    def delete_contact(self, contact_name):
-
-        return self._contacts.delete_by_field('name', contact_name)
+    def delete_contact(self, contact_name, record_id=None):
+        if record_id:
+            self._contacts.delete(record_id)
+        else:
+            return self._contacts.delete_by_field('name', contact_name)
 
     def generate_fields(self, client_obj):
         return {'name': client_obj.name,
