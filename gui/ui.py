@@ -17,7 +17,7 @@ from actions.summitmail_to_airtable import SummitMail
 
 def test_call():
     print('running test_call (ui.py)')
-    sm = SummitMail()
+    sm = SummitMail(str(Creds.base_id))
     result = sm.test()
     return 1 if result else 0
 
@@ -227,7 +227,7 @@ class MainWindow(QWidget):
         self.api_key = Creds.api_key
         self.cfg_name = Creds.cfg_name
         self.base_name = base_name
-        self.airtable = SummitMail()
+        self.airtable = SummitMail(str(Creds.base_id))
         self.setWindowTitle("SummitMailer")
         layout = QVBoxLayout()
         # widget group 1: collect, run, progress bar, base name
