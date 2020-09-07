@@ -85,9 +85,9 @@ def generate_output(data, client_objects):
         dialog_warning(Dialog(), "Output", "Nothing to output.", "No data to write")
 
 
-def run(airtable, subject, files_source):
-    clients = airtable.get_contacts_from_airtable(update=True)
-    source = f'../docs/inputs/{files_source}'
+def run(airtable, subject, files_source, direct='inputs', update=True):
+    clients = airtable.get_contacts_from_airtable(update=update)
+    source = f'../docs/{direct}/{files_source}'
     if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
         return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
     else:
