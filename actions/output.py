@@ -27,9 +27,11 @@ class Output:
         with open(f'{self.path}/{file_dated}', 'wt') as file:
             total = 0
             emailed = [client for client in self.clients_contacted]
+            print(len(emailed))
             file.write(f'{date_today}\n---\n')
             while emailed:
                 client = emailed.pop()
+                print(client.name)
                 total += 1
                 file.write(f'{client.name} ({client.country}) {client.website} | {client.email}\n')
             file.write('---\n')
@@ -38,4 +40,5 @@ class Output:
             file.write(f'New Estimates: 0\n')
             file.write(f'New Orders: 0\n')
             file.write('---')
+            print(emailed, " ... after writing")
         return Path(self.path) / file_dated

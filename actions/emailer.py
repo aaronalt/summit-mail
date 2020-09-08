@@ -1,5 +1,6 @@
+#! /usr/bin/env python3
+
 import configparser
-import traceback
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
@@ -7,9 +8,7 @@ import ssl
 from pathlib import Path
 
 from actions.output import Output
-from gui import dialog_error
 from gui.creds import Creds
-from gui.dialog import Dialog
 
 
 class Email:

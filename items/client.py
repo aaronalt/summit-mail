@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 class Client:
     def __init__(self, name, country, website, email, status='', contact_date='', contact_method='', source='', result='',
                  error_result='', interest_level=''):

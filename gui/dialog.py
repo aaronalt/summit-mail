@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 import os
 
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGridLayout, QPlainTextEdit, QWidget

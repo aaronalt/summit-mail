@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 import traceback
 from pathlib import Path
 from actions.emailer import Email

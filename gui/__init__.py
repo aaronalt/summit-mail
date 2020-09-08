@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 from PySide2.QtCore import QThread, QObject, Signal, Qt
 from PySide2.QtWidgets import QApplication
 

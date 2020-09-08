@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 from PySide2.QtCore import QAbstractTableModel
 from PySide2.QtGui import Qt
 
