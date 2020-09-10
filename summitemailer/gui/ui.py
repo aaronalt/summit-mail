@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 
 import os
 from queue import Queue
@@ -10,11 +9,11 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLa
     QTableView, QAbstractScrollArea, QDialog, QDialogButtonBox
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 
-from gui.creds import Creds
-from gui.models import TableModel
-from actions.util import cfg_from_selection, cfg_api_key, cfg_base_id, cfg_name, cfg_sender_email, \
+from summitemailer.gui.creds import Creds
+from summitemailer.gui.models import TableModel
+from summitemailer.actions.util import cfg_from_selection, cfg_api_key, cfg_base_id, cfg_name, cfg_sender_email, \
     cfg_sender_email_pw, cfg_test_email, save_cfg, send_test, generate_output, run
-from actions.summitmail_to_airtable import SummitMail
+from summitemailer.actions.summitmail_to_airtable import SummitMail
 
 
 def test_call():
@@ -120,8 +119,8 @@ class FromSaved(QWidget):
         # widget 2: list
         self.list_cfgs = QComboBox()
         self.list_cfgs.setContentsMargins(5, 5, 5, 5)
-        self.list_cfgs.setStyleSheet("color: white")
-        for cfg in os.listdir('../config'):
+        # self.list_cfgs.setStyleSheet("color: white")
+        for cfg in os.listdir('./config'):
             self.list_cfgs.addItem(cfg)
         self.list_cfgs.activated[str].connect(cfg_from_selection)
         # widget 3: next/back buttons
@@ -302,7 +301,7 @@ class MainWindow(QWidget):
         edit_files_source.setPlaceholderText("Choose file source...")
         edit_files_source.setStyleSheet("color: white")
         files_sources = []
-        for source in os.listdir('../docs/inputs'):
+        for source in os.listdir('./docs/inputs'):
             ext = source.find(".")
             new_source = source[:ext]
             if new_source not in files_sources:

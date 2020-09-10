@@ -2,11 +2,11 @@
 
 import traceback
 from pathlib import Path
-from actions.emailer import Email
-from actions.output import Output
-from gui.dialog import Dialog
-from gui import dialog_error, dialog_info, dialog_warning
-from gui.creds import Creds
+from summitemailer.actions.emailer import Email
+from summitemailer.actions.output import Output
+from summitemailer.gui.dialog import Dialog
+from summitemailer.gui import dialog_error, dialog_info, dialog_warning
+from summitemailer.gui.creds import Creds
 import configparser
 import os
 
@@ -44,7 +44,8 @@ def save_cfg():
     cfg['settings'] = {'sender_email': str(Creds.sender_email),
                        'sender_email_password': str(Creds.sender_email_pw),
                        'test_email': str(Creds.test_email)}
-    with open(f'../config/{Creds.cfg_name}.ini', 'w') as configfile:
+    # todo: remove hardcoded './config' and make an env or config variable
+    with open(f'./config/{Creds.cfg_name}.ini', 'w') as configfile:
         cfg.write(configfile)
 
     if not cfg['ENV']['cfg_name']:
@@ -53,12 +54,13 @@ def save_cfg():
         return dialog_warning(Dialog(), "Warning", "config name cannot be empty")
     else:
         return dialog_info(Dialog(), "Saved", "config saved successfully!", f'Save location:\n'
-                                                                            f'../config/{cfg["ENV"]["cfg_name"]}')
+                                                                            f'./config/{cfg["ENV"]["cfg_name"]}')
 
 
 def cfg_from_selection(item):
     """ this function will create an .ini file with env variables stored from user input"""
-    cfg.read(Path(f'../config/{item}'))
+    # todo: remove hardcoded './config' and make an env or config variable
+    cfg.read(Path(f'./config/{item}'))
     Creds.api_key = cfg['ENV']['airtable_api_key']
     Creds.base_id = cfg['ENV']['airtable_base_id']
     Creds.cfg_name = cfg['ENV']['cfg_name']
@@ -89,7 +91,7 @@ def generate_output(data, client_objects):
 
 def run(airtable, subject, files_source, direct='inputs', update=True):
     clients = airtable.get_contacts_from_airtable(update=update)
-    source = f'../docs/{direct}/{files_source}'
+    source = f'./docs/{direct}/{files_source}'
     if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
         return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
     else:
