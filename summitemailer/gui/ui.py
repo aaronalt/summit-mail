@@ -120,7 +120,7 @@ class FromSaved(QWidget):
         self.list_cfgs = QComboBox()
         self.list_cfgs.setContentsMargins(5, 5, 5, 5)
         # self.list_cfgs.setStyleSheet("color: white")
-        for cfg in os.listdir('./config'):
+        for cfg in os.listdir(f'{os.getcwd()}/config'):
             self.list_cfgs.addItem(cfg)
         self.list_cfgs.activated[str].connect(cfg_from_selection)
         # widget 3: next/back buttons
@@ -301,7 +301,7 @@ class MainWindow(QWidget):
         edit_files_source.setPlaceholderText("Choose file source...")
         edit_files_source.setStyleSheet("color: white")
         files_sources = []
-        for source in os.listdir('./docs/inputs'):
+        for source in os.listdir(f'{os.getcwd()}/docs/inputs'):
             ext = source.find(".")
             new_source = source[:ext]
             if new_source not in files_sources:

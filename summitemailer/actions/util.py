@@ -44,23 +44,22 @@ def save_cfg():
     cfg['settings'] = {'sender_email': str(Creds.sender_email),
                        'sender_email_password': str(Creds.sender_email_pw),
                        'test_email': str(Creds.test_email)}
-    # todo: remove hardcoded './config' and make an env or config variable
-    with open(f'./config/{Creds.cfg_name}.ini', 'w') as configfile:
+    with open(f'{os.getcwd()}/config/{Creds.cfg_name}.ini', 'w') as configfile:
         cfg.write(configfile)
 
+    # todo: better required field logic
     if not cfg['ENV']['cfg_name']:
         return dialog_warning(Dialog(), "Warning", "config name cannot be empty")
     if not cfg['ENV']['airtable_api_key']:
         return dialog_warning(Dialog(), "Warning", "config name cannot be empty")
     else:
         return dialog_info(Dialog(), "Saved", "config saved successfully!", f'Save location:\n'
-                                                                            f'./config/{cfg["ENV"]["cfg_name"]}')
+                                                                            f'{os.getcwd()}/config/{cfg["ENV"]["cfg_name"]}')
 
 
 def cfg_from_selection(item):
     """ this function will create an .ini file with env variables stored from user input"""
-    # todo: remove hardcoded './config' and make an env or config variable
-    cfg.read(Path(f'./config/{item}'))
+    cfg.read(Path(f'{os.getcwd()}/config/{item}'))
     Creds.api_key = cfg['ENV']['airtable_api_key']
     Creds.base_id = cfg['ENV']['airtable_base_id']
     Creds.cfg_name = cfg['ENV']['cfg_name']
@@ -91,7 +90,7 @@ def generate_output(data, client_objects):
 
 def run(airtable, subject, files_source, direct='inputs', update=True):
     clients = airtable.get_contacts_from_airtable(update=update)
-    source = f'./docs/{direct}/{files_source}'
+    source = f'{os.getcwd()}/docs/{direct}/{files_source}'
     if not os.path.exists(source + '.txt') | os.path.exists(source + '.html'):
         return dialog_error(Dialog(), "Error", f"{source+'.txt'} or {source+'.html'} not found.")
     else:
