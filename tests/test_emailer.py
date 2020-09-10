@@ -1,16 +1,15 @@
 from __future__ import absolute_import
 
 import os
-from smtplib import SMTPAuthenticationError
 import unittest
 from pathlib import Path
 
-from actions.emailer import Email
-from gui.creds import Creds
-from actions.util import cfg_from_selection
+from summitemailer.actions.emailer import Email
+from summitemailer.gui.creds import Creds
+from summitemailer.actions.util import cfg_from_selection
 import configparser
 
-from items.client import Client
+from summitemailer.items.client import Client
 
 
 class EmailerTest(unittest.TestCase):
@@ -18,7 +17,7 @@ class EmailerTest(unittest.TestCase):
     def setUp(self):
         self.subject = 'Re: Test Email'
         self.files_source = 'test'
-        self.filepath = '../docs/test_docs'
+        self.filepath = '../summitemailer/docs/test_docs'
         # using Mailtrap.io creds
         self.creds = Creds('id', 'apikey', 'test_config', 'aaron@mango-byte.com', 'sjmuclvzdtaqbhxa',
                            'aaronalt07@gmail.com')
@@ -29,7 +28,7 @@ class EmailerTest(unittest.TestCase):
         cfg['settings'] = {'sender_email': str(self.creds.sender_email),
                            'sender_email_password': str(self.creds.sender_email_pw),
                            'test_email': str(self.creds.test_email)}
-        with open(f'../config/{self.creds.cfg_name}.ini', 'w') as configfile:
+        with open(f'../summitemailer/config/{self.creds.cfg_name}.ini', 'w') as configfile:
             cfg.write(configfile)
         cfg_from_selection(f'{self.creds.cfg_name}.ini')
         self.email = Email(self.subject, self.files_source, self.filepath)
@@ -60,11 +59,11 @@ class EmailerTest(unittest.TestCase):
                                                #output_path="../docs/test_docs/output")
         # self.assertTrue(emails_sent)
         send_tolist = self.email.filter_list(self.clients_list, write_output=False,
-                                             output_path="../docs/test_docs/outputs")
+                                             output_path="../summitemailer/docs/test_docs/outputs")
         self.assertTrue(send_tolist)
 
     def tearDown(self):
-        for root, dirs, files in os.walk("../config"):
+        for root, dirs, files in os.walk("../summitemailer/config"):
             for file in files:
                 if file.startswith('test'):
                     path = Path(root) / file

@@ -1,9 +1,8 @@
 #! /usr/bin/env python3
 
 import sys
-import gui
-from gui import Application
-import gui.controller
+from summitemailer.gui import Application
+import summitemailer.gui.controller
 
 
 def initialize_qt_app(args):
@@ -14,7 +13,7 @@ def initialize_qt_app(args):
 
 def run_gui(app):
     print("running gui...")
-    start = gui.controller.Controller()
+    start = summitemailer.gui.controller.Controller()
     start.show_welcome()
     return app.exec_()
 

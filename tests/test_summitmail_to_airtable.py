@@ -2,9 +2,9 @@ from __future__ import absolute_import
 
 import unittest
 
-from actions.summitmail_to_airtable import SummitMail
-from actions.util import cfg_from_selection, run
-from gui.creds import Creds
+from summitemailer.actions.summitmail_to_airtable import SummitMail
+from summitemailer.actions.util import cfg_from_selection
+from summitemailer.gui.creds import Creds
 
 
 class SummitMailToAirtableTest(unittest.TestCase):

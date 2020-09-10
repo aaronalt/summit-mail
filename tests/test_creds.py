@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import unittest
-from gui.creds import Creds
+from summitemailer.gui.creds import Creds
 
 
 class CredsTest(unittest.TestCase):

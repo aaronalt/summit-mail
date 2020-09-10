@@ -7,8 +7,8 @@ import smtplib
 import ssl
 from pathlib import Path
 
-from actions.output import Output
-from gui.creds import Creds
+from summitemailer.actions.output import Output
+from summitemailer.gui.creds import Creds
 
 
 class Email:

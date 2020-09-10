@@ -1,0 +1,4 @@
+airtable-python-wrapper
+python-dotenv
+PySide2
+pyinstaller

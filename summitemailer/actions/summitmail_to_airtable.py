@@ -3,10 +3,10 @@
 import datetime
 import requests
 from airtable import Airtable
-from gui import dialog_error
-from gui.dialog import Dialog
-from items.client import Client
-from gui.creds import Creds
+from summitemailer.gui import dialog_error
+from summitemailer.gui.dialog import Dialog
+from summitemailer.items.client import Client
+from summitemailer.gui.creds import Creds
 import traceback
 
 
