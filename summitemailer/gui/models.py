@@ -1,4 +1,3 @@
-
 from PySide2.QtCore import QAbstractTableModel
 from PySide2.QtGui import Qt
 

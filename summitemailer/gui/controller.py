@@ -1,4 +1,3 @@
-
 from summitemailer.gui.ui import Welcome, FromNew, FromSaved, MainWindow, test_call
 
 welcome = None

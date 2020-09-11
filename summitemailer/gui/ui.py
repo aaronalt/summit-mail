@@ -1,7 +1,5 @@
 
 import os
-from queue import Queue
-from threading import Thread
 
 from PySide2.QtCore import Signal, Qt
 from PySide2.QtGui import QFont
@@ -9,48 +7,17 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLa
     QTableView, QAbstractScrollArea, QDialog, QDialogButtonBox
 from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 
-from summitemailer.gui.creds import Creds
+from summitemailer.gui import creds
 from summitemailer.gui.models import TableModel
-from summitemailer.actions.util import cfg_from_selection, cfg_api_key, cfg_base_id, cfg_name, cfg_sender_email, \
-    cfg_sender_email_pw, cfg_test_email, save_cfg, send_test, generate_output, run
-from summitemailer.actions.summitmail_to_airtable import SummitMail
+from summitemailer.actions import util
+from summitemailer.actions import summitmail_to_airtable
 
 
 def test_call():
     print('running test_call (ui.py)')
-    sm = SummitMail(str(Creds.base_id))
+    sm = summitmail_to_airtable.SummitMail(str(creds.Creds.base_id))
     result = sm.test()
     return 1 if result else 0
-
-
-class Listener(Thread):
-
-    def __init__(self, listener):
-        Thread.__init__(self)
-        self.daemon = True
-        self.listener, self.queue = listener, Queue()
-        self._run = True
-        self.start()
-
-    def run(self):
-        if self.listener is None:
-            return
-        while self._run:
-            try:
-                conn = self.listener.accept()
-                msg = conn.recv()
-                self.queue.put(msg)
-            except:
-                continue
-
-    def close(self):
-        self._run = False
-        try:
-            if self.listener is not None:
-                self.listener.close()
-        except:
-            import traceback
-            traceback.print_exc()
 
 
 class Welcome(QWidget):
@@ -120,9 +87,9 @@ class FromSaved(QWidget):
         self.list_cfgs = QComboBox()
         self.list_cfgs.setContentsMargins(5, 5, 5, 5)
         # self.list_cfgs.setStyleSheet("color: white")
-        for cfg in os.listdir(f'{os.getcwd()}/config'):
+        for cfg in os.listdir(f'{util.resource_path()}/config'):
             self.list_cfgs.addItem(cfg)
-        self.list_cfgs.activated[str].connect(cfg_from_selection)
+        self.list_cfgs.activated[str].connect(util.cfg_from_selection)
         # widget 3: next/back buttons
         btn_group = QHBoxLayout()
         btn_group.setContentsMargins(5, 20, 5, 5)
@@ -174,12 +141,12 @@ class FromNew(QWidget):
         edit_sender_email_pw.setPlaceholderText("Api password of sender email")
         edit_test_email = QLineEdit()
         edit_test_email.setPlaceholderText("Email address to test (try one of your own)")
-        edit_base_id.editingFinished.connect(lambda: cfg_base_id(edit_base_id.text()))
-        edit_api_key.editingFinished.connect(lambda: cfg_api_key(edit_api_key.text()))
-        edit_cfg_name.editingFinished.connect(lambda: cfg_name(edit_cfg_name.text()))
-        edit_sender_email.editingFinished.connect(lambda: cfg_sender_email(edit_sender_email.text()))
-        edit_sender_email_pw.editingFinished.connect(lambda: cfg_sender_email_pw(edit_sender_email_pw.text()))
-        edit_test_email.editingFinished.connect(lambda: cfg_test_email(edit_test_email.text()))
+        edit_base_id.editingFinished.connect(lambda: util.cfg_base_id(edit_base_id.text()))
+        edit_api_key.editingFinished.connect(lambda: util.cfg_api_key(edit_api_key.text()))
+        edit_cfg_name.editingFinished.connect(lambda: util.cfg_name(edit_cfg_name.text()))
+        edit_sender_email.editingFinished.connect(lambda: util.cfg_sender_email(edit_sender_email.text()))
+        edit_sender_email_pw.editingFinished.connect(lambda: util.cfg_sender_email_pw(edit_sender_email_pw.text()))
+        edit_test_email.editingFinished.connect(lambda: util.cfg_test_email(edit_test_email.text()))
         # setup grid layout
         layout_grid = QGridLayout()
         layout_grid.setSpacing(10)
@@ -204,7 +171,7 @@ class FromNew(QWidget):
         btn_group.addWidget(btn_save)
         btn_group.addWidget(btn_use_once)
         btn_back.clicked.connect(lambda: self.switch.emit(self, 'welcome'))
-        btn_save.clicked.connect(save_cfg)
+        btn_save.clicked.connect(util.save_cfg)
         btn_use_once.clicked.connect(lambda: self.switch.emit(self, 'load_main'))
         # add all layouts
         layout.addLayout(layout_grid)
@@ -224,11 +191,11 @@ class MainWindow(QWidget):
 
     def __init__(self, base_name="New Contacts"):
         QWidget.__init__(self)
-        self.base_id = Creds.base_id
-        self.api_key = Creds.api_key
-        self.cfg_name = Creds.cfg_name
+        self.base_id = creds.Creds.base_id
+        self.api_key = creds.Creds.api_key
+        self.cfg_name = creds.Creds.cfg_name
         self.base_name = base_name
-        self.airtable = SummitMail(str(Creds.base_id))
+        self.airtable = summitmail_to_airtable.SummitMail(str(creds.Creds.base_id))
         self.setWindowTitle("SummitMailer")
         layout = QVBoxLayout()
         # widget group 1: collect, run, progress bar, base name
@@ -268,7 +235,7 @@ class MainWindow(QWidget):
         btn_group_edit_test.addWidget(label_view_edit, 1, 3)
         btn_group_edit_test.addWidget(btn_edit_html, 1, 4)
         btn_group_edit_test.addWidget(btn_edit_txt, 1, 5)
-        btn_generate_output.clicked.connect(lambda: generate_output(self.data, self.client_objects))
+        btn_generate_output.clicked.connect(lambda: util.generate_output(self.data, self.client_objects))
         # add layouts
         layout.addLayout(btn_group_collect_run_progress)
         layout.addLayout(table)
@@ -311,13 +278,13 @@ class MainWindow(QWidget):
         edit_subject.editingFinished.connect(lambda: self.set_subject(edit_subject.text()))
         btn_edit = QPushButton("edit")
         btn_test = QPushButton("send test")
-        btn_test.clicked.connect(lambda: send_test(self.subject, self.files_source))
+        btn_test.clicked.connect(lambda: util.send_test(self.subject, self.files_source))
         dialog = QDialog(self)
         dialog.setGeometry(511, 380, 400, 150)
         btn_send = QDialogButtonBox(QDialogButtonBox.Apply)
         btn_back = QDialogButtonBox(QDialogButtonBox.Cancel)
         btn_back.clicked.connect(dialog.accept)
-        btn_send.clicked.connect(lambda: run(self.airtable, self.subject, self.files_source))
+        btn_send.clicked.connect(lambda: util.run(self.airtable, self.subject, self.files_source))
         layout_grid.addWidget(label_subject, 1, 0)
         layout_grid.addWidget(edit_subject, 1, 1)
         layout_grid.addWidget(label_files_source, 2, 0)

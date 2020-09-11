@@ -1,5 +1,3 @@
-#! /usr/bin/env python3
-
 import sys
 from summitemailer.gui import Application
 import summitemailer.gui.controller

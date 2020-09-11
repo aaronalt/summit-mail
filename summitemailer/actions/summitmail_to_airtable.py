@@ -1,12 +1,10 @@
-#! /usr/bin/env python3
-
 import datetime
 import requests
 from airtable import Airtable
 from summitemailer.gui import dialog_error
-from summitemailer.gui.dialog import Dialog
-from summitemailer.items.client import Client
-from summitemailer.gui.creds import Creds
+from summitemailer.gui import dialog
+from summitemailer.items import client
+from summitemailer.gui import creds
 import traceback
 
 
@@ -18,7 +16,7 @@ class SummitMail:
         if no_connection:
             self._contacts = no_connection
         else:
-            self._contacts = Airtable(base_key, table_name, str(Creds.api_key))
+            self._contacts = Airtable(base_key, table_name, str(creds.Creds.api_key))
         self.client_objects = []
 
     def test(self):
@@ -26,7 +24,7 @@ class SummitMail:
             self._contacts.get_all()
         except requests.exceptions.HTTPError as e:
             msg = str(e)
-            dialog_error(Dialog(), "ENV warning", msg, traceback.format_exc())
+            dialog_error(dialog.Dialog(), "ENV warning", msg, traceback.format_exc())
             return 0
         else:
             return 1
@@ -62,7 +60,7 @@ class SummitMail:
         :param i: Record from table -> { "id": "someid", "fields": { "field_1": "data", "field_2": "more_data" ... } }
         :return: Client object
         """
-        return Client(i['fields']['name'].strip().replace("'", ""),
+        return client.Client(i['fields']['name'].strip().replace("'", ""),
                       i['fields']['country'],
                       i['fields']['website'],
                       i['fields']['email'].strip())

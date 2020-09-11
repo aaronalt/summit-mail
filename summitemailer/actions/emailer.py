@@ -6,21 +6,22 @@ import smtplib
 import ssl
 from pathlib import Path
 
-from actions.output import Output
-from gui import dialog_error
-from gui.creds import Creds
-from gui.dialog import Dialog
+from summitemailer.actions import output
+from summitemailer.actions import util
+from summitemailer.gui import dialog_error
+from summitemailer.gui import creds
+from summitemailer.gui.dialog import Dialog
 
 
 class Email:
 
-    def __init__(self, subject, files_source, file_path='../docs/inputs/'):
+    def __init__(self, subject, files_source, file_path='/docs/inputs/'):
         self.context = ssl.create_default_context()
         self.message = MIMEMultipart("alternative")
         self.subject = subject
-        self.files_source_txt = f'{file_path}/{files_source}.txt'
-        self.files_source_html = f'{file_path}/{files_source}.html'
-        self.cfg_name = f"../config/{Creds.cfg_name}.ini"
+        self.files_source_txt = f'{util.resource_path()}/{file_path}/{files_source}.txt'
+        self.files_source_html = f'{util.resource_path()}/{file_path}/{files_source}.html'
+        self.cfg_name = f"{util.resource_path()}/config/{creds.Creds.cfg_name}.ini"
         self.cfg = configparser.ConfigParser()
         self.cfg.read(self.cfg_name)
         self.sender_email = self.cfg['settings']['sender_email']
@@ -29,8 +30,7 @@ class Email:
         self.send_to = ""
         self.rec_list = []
 
-    def build_and_send(self, to_addrs=None, host="smtp.gmail.com", port=465, write_output=True,
-                      output_path="../docs/outputs/", conn_test=False):
+    def build_and_send(self, to_addrs=None, host="smtp.gmail.com", port=465, write_output=True, conn_test=False):
         # build
         if to_addrs is None:
             to_addrs = self.test_email
@@ -77,12 +77,12 @@ class Email:
         except FileNotFoundError:
             return ""
 
-    def filter_list(self, client_list, write_output=True, output_path="../docs/outputs/"):
+    def filter_list(self, client_list, write_output=True, output_path="/docs/outputs/"):
         for each in client_list:
             self.rec_list.append(each)
             self.build_and_send(each.email)
         filepath = Path()
         if write_output:
-            output = Output(self.rec_list, output_path)
-            filepath = output.write()
+            output_list = output.Output(self.rec_list, f'{util.resource_path()}/output_path')
+            filepath = output_list.write()
         return filepath

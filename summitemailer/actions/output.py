@@ -2,10 +2,12 @@ import os
 import datetime
 from pathlib import Path
 
+from summitemailer.actions import util
+
 
 class Output:
 
-    def __init__(self, clients_contacted=None, path='../docs/outputs', output_filename="output"):
+    def __init__(self, clients_contacted=None, path='docs/outputs', output_filename="output"):
         if clients_contacted is None:
             clients_contacted = []
         self.path = path
@@ -24,7 +26,7 @@ class Output:
     def write(self):
         date_today = self.d.ctime()
         date, file_dated, i = self.get_date_and_increment()
-        with open(f'{self.path}/{file_dated}', 'wt') as file:
+        with open(f'{util.resource_path()}/{self.path}/{file_dated}', 'wt') as file:
             total = 0
             emailed = [client for client in self.clients_contacted]
             print(len(emailed))
@@ -40,5 +42,4 @@ class Output:
             file.write(f'New Estimates: 0\n')
             file.write(f'New Orders: 0\n')
             file.write('---')
-            print(emailed, " ... after writing")
         return Path(self.path) / file_dated
