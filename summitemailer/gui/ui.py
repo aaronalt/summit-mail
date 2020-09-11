@@ -266,7 +266,7 @@ class MainWindow(QWidget):
         edit_subject = QLineEdit()
         edit_files_source = QComboBox()
         edit_files_source.setPlaceholderText("Choose file source...")
-        edit_files_source.setStyleSheet("color: white")
+        # edit_files_source.setStyleSheet("color: white")
         files_sources = []
         for source in os.listdir(f'{os.getcwd()}/docs/inputs'):
             ext = source.find(".")

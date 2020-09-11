@@ -83,6 +83,6 @@ class Email:
             self.build_and_send(each.email)
         filepath = Path()
         if write_output:
-            output_list = output.Output(self.rec_list, f'{util.resource_path()}/output_path')
+            output_list = output.Output(self.rec_list, path=output_path)
             filepath = output_list.write()
         return filepath
