@@ -1,6 +1,7 @@
+import logging
 import sys
+import summitemailer.gui.controller as gui
 from summitemailer.gui import Application
-import summitemailer.gui.controller
 
 
 def initialize_qt_app(args):
@@ -10,14 +11,16 @@ def initialize_qt_app(args):
 
 
 def run_gui(app):
-    print("running gui...")
-    start = summitemailer.gui.controller.Controller()
+    # logging.info('Running gui')
+    start = gui.Controller()
     start.show_welcome()
     return app.exec_()
 
 
 def main(args=sys.argv):
     app = initialize_qt_app(args)
+    logging.basicConfig(filename='summitmailer.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    # logging.info('Started app')
     return run_gui(app)
 
 

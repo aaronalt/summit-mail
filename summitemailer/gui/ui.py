@@ -9,8 +9,7 @@ from PySide2.examples.widgets.itemviews.addressbook.tablemodel import TableModel
 
 from summitemailer.gui import creds
 from summitemailer.gui.models import TableModel
-from summitemailer.actions import util
-from summitemailer.actions import summitmail_to_airtable
+from summitemailer.actions import summitmail_to_airtable, util
 
 
 def test_call():
@@ -145,7 +144,8 @@ class FromNew(QWidget):
         edit_api_key.editingFinished.connect(lambda: util.cfg_api_key(edit_api_key.text()))
         edit_cfg_name.editingFinished.connect(lambda: util.cfg_name(edit_cfg_name.text()))
         edit_sender_email.editingFinished.connect(lambda: util.cfg_sender_email(edit_sender_email.text()))
-        edit_sender_email_pw.editingFinished.connect(lambda: util.cfg_sender_email_pw(edit_sender_email_pw.text()))
+        edit_sender_email_pw.editingFinished.connect(lambda: util.cfg_sender_email_pw(
+            edit_sender_email_pw.text()))
         edit_test_email.editingFinished.connect(lambda: util.cfg_test_email(edit_test_email.text()))
         # setup grid layout
         layout_grid = QGridLayout()

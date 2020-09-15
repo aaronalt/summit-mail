@@ -71,16 +71,28 @@ class Email:
                     )
                     print(f"email sent to {to_addrs}")
                 except smtplib.SMTPRecipientsRefused as e:
+                    # todo: add refused recipients to list instead of dialog
                     dialog_error(Dialog(), "SMTP Error", f"Couldn't send email to:\ne",
                                  traceback.format_exc())
-                    print(f"email \'{to_addrs}\' not found")
+                    print(f"email [{to_addrs}] not found")
+                except smtplib.SMTPDataError as data_err:
+                    print("ERROR: Data error", traceback.format_exc())
         except FileNotFoundError:
             return ""
 
     def filter_list(self, client_list, write_output=True, output_path="/docs/outputs/"):
+        # temp fix
+        no_contact_list = []
         for each in client_list:
-            self.rec_list.append(each)
-            self.build_and_send(each.email)
+            try:
+                self.rec_list.append(each)
+                self.build_and_send(each.email)
+            except smtplib.SMTPDataError as err:
+                # todo: implement dictionary return from write_output()
+                print(f"ERROR: could not send to [{each.email}]", err, traceback.format_exc())
+                no_contact_list.append(each)
+                continue
+        print(no_contact_list)
         filepath = Path()
         if write_output:
             output_list = output.Output(self.rec_list, path=output_path)

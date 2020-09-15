@@ -1,13 +1,13 @@
 import sys
 import traceback
 from pathlib import Path
-from summitemailer.actions import emailer
-from summitemailer.actions.output import Output
+from summitemailer.actions import emailer, output
 from summitemailer.gui.dialog import Dialog
 from summitemailer.gui import dialog_error, dialog_info, dialog_warning
 from summitemailer.gui.creds import Creds
 import configparser
 import os
+import logging
 
 cfg = configparser.ConfigParser()
 
@@ -39,9 +39,21 @@ def cfg_test_email(value):
 def resource_path(relative_path='../../'):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     # PyInstaller creates a temp folder and stores path in _MEIPASS
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    path_to_dir = os.path.join(base_path, relative_path, 'summitemailer')
+    app_path = ""
+    path_to_dir = ""
+    if getattr(sys, 'frozen', False):
+        # If the application is run as a bundle, the PyInstaller bootloader
+        # extends the sys module by a flag frozen=True and sets the app
+        # path into variable '_MEIPASS'.
+        app_path = sys._MEIPASS
+        logging.info("not frozen: %s", app_path)
+        path_to_dir = os.path.join(app_path, 'summitemailer')
+    else:
+        app_path = os.path.dirname(os.path.abspath(__file__))
+        logging.info("its frozen: %s", app_path)
+        path_to_dir = os.path.join(app_path, relative_path, 'summitemailer')
     os.chdir(path_to_dir)
+    logging.info("new dir: %s", os.getcwd())
     return os.getcwd()
 
 
@@ -76,6 +88,9 @@ def cfg_from_selection(item):
     Creds.base_id = cfg['ENV']['airtable_base_id']
     Creds.cfg_name = cfg['ENV']['cfg_name']
 
+    logging.info('loading config from: [%s]', item)
+    logging.info('new cwd is: [%s]', os.getcwd())
+
 
 def send_test(subject, file_source):
     test = emailer.Email(subject, file_source)
@@ -93,8 +108,8 @@ def send_test(subject, file_source):
 
 def generate_output(data, client_objects):
     if data:
-        output = Output(clients_contacted=client_objects)
-        filepath = output.write()
+        output_file = output.Output(clients_contacted=client_objects)
+        filepath = output_file.write()
         dialog_info(Dialog(), "Output", "Output generated!", filepath)
     else:
         dialog_warning(Dialog(), "Output", "Nothing to output.", "No data to write")
